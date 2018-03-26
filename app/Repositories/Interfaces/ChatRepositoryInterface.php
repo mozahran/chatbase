@@ -46,12 +46,13 @@ interface ChatRepositoryInterface
     public function getConversation(int $id, int $userId);
 
     /**
-     * Delete a specific conversation that is the user involved in.
+     * Delete the relationship between a user and a conversation.
      *
      * @param int $id
+     * @param int $userId
      * @return bool
      */
-    public function deleteConversation(int $id) : bool;
+    public function deleteConversation(int $id, int $userId) : bool;
 
     /**
      *

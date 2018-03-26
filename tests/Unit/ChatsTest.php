@@ -58,7 +58,7 @@ class ChatsTest extends TestCase
     {
         $c = $this->repository->createConversation(1, [1, 2]);
 
-        $deleted = $this->repository->deleteConversation($c->getId());
+        $deleted = $this->repository->deleteConversation($c->getId(), 1);
 
         $this->assertTrue($deleted);
     }

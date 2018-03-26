@@ -1,59 +1,120 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+## About Chatbase
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Chatbase is a free open source code for integration with your Laravel projects. 
+This chat is unit-tested so make sure you run the tests each time you make modifications to the core functions.
+You can easily swap the ChatRepositoryInterface with your own interfaces if you like, but MAKE SURE you bind your new interface to the concrete class `ChatRepository` in `AppServiceProvider.php` line `18`.
 
-## About Laravel
+### Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+- Single conversation (one-to-one)
+- Group conversation (one-to-many)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## How to use
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+The first thing you need to do is to inject the ChatRepositoryInterface to the function/method you want to use.
 
-## Learning Laravel
+```php
+Route::get('/test', function (\App\Repositories\Interfaces\ChatRepositoryInterface $chatRepository) {
+    //
+}
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
+Note: You are free to create an alias for Chatbase or a service provider. There are no restrictions at all.
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
 
-## Laravel Sponsors
+### Create A Conversation
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+The `createConversation` method in ChatRepository take two arguments. The first one an integer for the creator ID and the second param is the array of users involved in the conversation (the creator ID must be included).
+That way you can have a one-to-one chat by passing two user IDs or one-to-many by passing three or more user IDs.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Pulse Storm](http://www.pulsestorm.net/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
+```php
+$conversation = $chatRepository->createConversation(1, [1, 2]);
+```
 
-## Contributing
+##### Add users to a conversation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+You can add users to a created conversation at any time, just like facebook group conversations. This method takes two parameters: the user ID and the conversations ID respectively.
 
-## Security Vulnerabilities
+```php
+$chatRepository->addUserToConversation(3, 1)
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Now, the user with ID `3` is added to the conversation of ID `1`.
 
-## License
+### Get A Conversation
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The `getConversation` method takes the logged in user ID since each user can delete replies from his/her point of view.
+
+```php
+$conversationId = 1;
+$userId = 1;
+$conversation = $chatRepository->getConversation($conversationId, $userId);
+```
+
+If you want to get the replies along with the conversation call the `getConversationWithReplies` method with the same parameters as in `getConversation`.
+
+As you can see from the signatures above, you can fetch user's conversations simply by calling `getConversations` and passing the user ID.
+
+### Get Conversations
+
+To get the conversation of a specific user:
+
+```php
+$conversations = $chatRepository->getConversations(1);
+```
+
+You can limit the replies by passing `limit` and `offset` params to the method after the `userId`.
+
+### Delete A Conversation
+
+When a user deletes a conversation, Other users involved in the conversation are not affected. What really happens is that the relationship in the `conversation_user` table for that user is deleted.
+
+```php
+$chatRepositoy->deleteConversation(1);
+```
+
+### Create A Reply
+
+In order to create a reply you need to pass the conversation ID, user ID & the text of the reply respectively.
+
+```php
+$chatRepository->createReply(1, 2, "Hello World!");
+```
+
+### Get Replies
+
+The user ID here is used to get the replies form the user's point of view (to avoid fetching replies that the user deleted). 
+
+```php
+$conversationId = 1;
+$userId = 1;
+
+$replies = $chatRepository->getReplies($conversationId, $userId);
+```
+
+You can limit the replies by passing `limit` and `offset` params to the method after the `userId`.
+
+### Get New Replies
+
+You can use this method in a real-time conversation to fetch new replies using a time marker.
+
+```php
+$conversationId = 1;
+$userId = 1;
+$timeMarker = \Carbon\Carbon::now();
+$newReplies = $chatRepository->getNewReplies($conversationId, $userId, $timeMarker);
+```
+
+### Delete A Reply
+
+Once again, this won't delete the actual reply stored in `conversation_replies` table. It just deleted the relationship for the user with this reply. The reply only gets deleted if there are no users interested in (have relationships with) this reply.
+
+```php
+$replyId = 1;
+$userId = 1;
+$chatReply->deleteReply($replyId, $userId);
+```
+
+### License
+
+Chatbase is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

@@ -39,35 +39,33 @@ You can add users to a created conversation at any time, just like facebook grou
 $chatRepository->addUserToConversation(3, 1)
 ```
 
-Now, the user with ID `3` is added to the conversation of ID `1`.
-
 ### Get A Conversation
 
-The `getConversation` method takes the logged in user ID since each user can delete replies from his/her point of view.
+The `getConversation` method takes the logged in `userId` since each user can delete replies on his part while not affecting other users involved in the conversation.
 
 ```php
 $conversationId = 1;
 $userId = 1;
+
 $conversation = $chatRepository->getConversation($conversationId, $userId);
 ```
 
-If you want to get the replies along with the conversation call the `getConversationWithReplies` method with the same parameters as in `getConversation`.
-
-As you can see from the signatures above, you can fetch user's conversations simply by calling `getConversations` and passing the user ID.
+If you want to get the replies along with the conversation call the `getConversationWithReplies` method with the same parameters as in the `getConversation` method.
 
 ### Get Conversations
 
-To get the conversation of a specific user:
+To get the conversations of a specific user:
+
 
 ```php
 $conversations = $chatRepository->getConversations(1);
 ```
 
-You can limit the replies by passing `limit` and `offset` params to the method after the `userId`.
+You can limit the results by passing `limit` and `offset` params to the method after the `userId`.
 
 ### Delete A Conversation
 
-When a user deletes a conversation, Other users involved in the conversation are not affected. What really happens is that the relationship in the `conversation_user` table for that user is deleted.
+When a user deletes a conversation, other users involved in the conversation are not affected. What really happens is that the relationship created for that user in the `conversation_user` table gets deleted.
 
 ```php
 $chatRepositoy->deleteConversation(1);
@@ -75,7 +73,7 @@ $chatRepositoy->deleteConversation(1);
 
 ### Create A Reply
 
-In order to create a reply you need to pass the conversation ID, user ID & the text of the reply respectively.
+In order to create a reply you need to pass the `conversationId`, `userId` & the `text` of the reply respectively.
 
 ```php
 $chatRepository->createReply(1, 2, "Hello World!");
@@ -83,7 +81,7 @@ $chatRepository->createReply(1, 2, "Hello World!");
 
 ### Get Replies
 
-The user ID here is used to get the replies form the user's point of view (to avoid fetching replies that the user deleted). 
+The `userId` here is used to get the replies form the user's point of view (to avoid fetching replies that the user deleted). 
 
 ```php
 $conversationId = 1;
@@ -102,19 +100,17 @@ You can use this method in a real-time conversation to fetch new replies using a
 $conversationId = 1;
 $userId = 1;
 $timeMarker = \Carbon\Carbon::now();
+
 $newReplies = $chatRepository->getNewReplies($conversationId, $userId, $timeMarker);
 ```
 
 ### Delete A Reply
 
-Once again, this won't delete the actual reply stored in `conversation_replies` table. It just deleted the relationship for the user with this reply. The reply only gets deleted if there are no users interested in (have relationships with) this reply.
+Once again, this won't delete the actual reply stored in `conversation_replies` table. It just deletes the relationship for the user with this reply. The reply only gets deleted if there are no users interested in (have relationships with) this reply.
 
 ```php
 $replyId = 1;
 $userId = 1;
+
 $chatReply->deleteReply($replyId, $userId);
 ```
-
-### License
-
-Chatbase is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

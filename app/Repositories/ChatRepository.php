@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\User;
 use Carbon\Carbon;
 use DB;
 use App\Conversation;
@@ -96,14 +97,31 @@ class ChatRepository implements ChatRepositoryInterface
     }
 
     /**
-     * Delete a specific conversation that is the user involved in.
+     * Delete the relationship between a user and a conversation.
      *
      * @param int $id
+     * @param int $userId
      * @return bool
      */
-    public function deleteConversation(int $id) : bool
+    public function deleteConversation(int $id, int $userId) : bool
     {
-        return (bool) Conversation::where(Conversation::FIELD_PK, $id)->delete();
+        $conversationUsersCount = ConversationUser::where([
+            ConversationUser::FIELD_CONVERSATION_ID => $id,
+            ConversationUser::FIELD_USER_ID => $userId
+        ])->count();
+
+        $conversationDeleted = ConversationUser::where([
+            ConversationUser::FIELD_CONVERSATION_ID => $id,
+            ConversationUser::FIELD_USER_ID => $userId
+        ])->delete();
+
+        // If the last user in a conversation deletes his/her own relationship to this conversation,
+        // we need to delete the conversation since it's no longer needed.
+        if ($conversationUsersCount <= 1 && $conversationDeleted) {
+            Conversation::where(Conversation::FIELD_PK, $id)->delete();
+        }
+
+        return $conversationDeleted;
     }
 
     /**
@@ -216,9 +234,21 @@ class ChatRepository implements ChatRepositoryInterface
      */
     public function deleteReply(int $replyId, int $userId) : bool
     {
-        return (bool) ConversationReplyUser::where(ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID, $replyId)
+        $replyUsersCount = ConversationReplyUser::where([
+            ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID => $replyId,
+            ConversationReplyUser::FIELD_USER_ID => $userId
+        ])->count();
+
+        $replyDeleted = ConversationReplyUser::where(ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID, $replyId)
             ->where(ConversationReplyUser::FIELD_USER_ID, $userId)
             ->delete();
+
+        // Delete the reply if there are no more users involved.
+        if ($replyUsersCount <= 1 && $replyDeleted) {
+            ConversationReply::where(ConversationReply::FIELD_PK, $replyId)->delete();
+        }
+
+        return $replyDeleted;
     }
 
     /**

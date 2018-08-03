@@ -30,7 +30,7 @@ class ChatRepository implements ChatRepositoryInterface
         })->find($id);
     }
 
-    public function createConversation(User $creator, array $users) : ?Conversation
+    public function createConversation(User $creator, array $recipients) : ?Conversation
     {
         DB::beginTransaction();
 
@@ -40,8 +40,8 @@ class ChatRepository implements ChatRepositoryInterface
             $conversation->setCreator($creator);
             $conversation->save();
 
-            foreach ($users as $user) {
-                $this->addUserToConversation($user, $conversation);
+            foreach ($recipients as $recipient) {
+                $this->addUserToConversation($recipient, $conversation);
             }
 
             DB::commit();

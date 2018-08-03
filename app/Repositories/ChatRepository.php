@@ -2,27 +2,38 @@
 
 namespace App\Repositories;
 
-use App\User;
-use Carbon\Carbon;
 use DB;
+use Carbon\Carbon;
 use App\Conversation;
 use App\ConversationReply;
 use App\ConversationReplyUser;
 use App\ConversationUser;
 use App\Repositories\Interfaces\ChatRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 class ChatRepository implements ChatRepositoryInterface
 {
-    /**
-     * Create a new conversation.
-     *
-     * @param int $creatorId
-     * @param $users
-     * @return Model|null
-     */
-    public function createConversation(int $creatorId, array $users)
+    public function getConversations(int $userId, $limit = 15, $offset = 0) : Collection
+    {
+        return Conversation::whereHas('users', function ($query) use ($userId) {
+            return $query->where(ConversationUser::FIELD_USER_ID, $userId);
+        })
+            ->with(['lastReply', 'users' => function($query) use ($userId) {
+                return $query->where(ConversationUser::FIELD_USER_ID, '!=', $userId);
+            }])
+            ->limit($limit)
+            ->offset($offset)
+            ->get();
+    }
+
+    public function getConversation(int $id, int $userId) : ?Conversation
+    {
+        return Conversation::whereHas('users', function ($query) use ($userId) {
+            return $query->where(ConversationUser::FIELD_USER_ID, $userId);
+        })->find($id);
+    }
+
+    public function createConversation(int $creatorId, array $users) : ?Conversation
     {
         DB::beginTransaction();
 
@@ -46,93 +57,7 @@ class ChatRepository implements ChatRepositoryInterface
         }
     }
 
-    /**
-     * Add a specific user to a conversation.
-     *
-     * @param int $userId
-     * @param int $conversationId
-     * @return bool
-     */
-    public function addUserToConversation(int $userId, int $conversationId) : bool
-    {
-        return (bool) (new ConversationUser())
-            ->setConversationId($conversationId)
-            ->setUserId($userId)
-            ->save();
-    }
-
-    /**
-     * Get the conversations that the user either created or is involved in.
-     *
-     * @param int $userId
-     * @param int $limit
-     * @param int $offset
-     * @return Collection
-     */
-    public function getConversations(int $userId, $limit = 15, $offset = 0) : Collection
-    {
-        return Conversation::whereHas('users', function ($query) use ($userId) {
-                return $query->where(ConversationUser::FIELD_USER_ID, $userId);
-            })
-            ->with(['lastReply', 'users' => function($query) use ($userId) {
-                return $query->where(ConversationUser::FIELD_USER_ID, '!=', $userId);
-            }])
-            ->limit($limit)
-            ->offset($offset)
-            ->get();
-    }
-
-    /**
-     * Get a specific conversation from the point of view of a specific user.
-     *
-     * @param int $id
-     * @param int $userId
-     * @return Model|null
-     */
-    public function getConversation(int $id, int $userId)
-    {
-        return Conversation::whereHas('users', function ($query) use ($userId) {
-            return $query->where(ConversationUser::FIELD_USER_ID, $userId);
-        })->find($id);
-    }
-
-    /**
-     * Delete the relationship between a user and a conversation.
-     *
-     * @param int $id
-     * @param int $userId
-     * @return bool
-     */
-    public function deleteConversation(int $id, int $userId) : bool
-    {
-        $conversationUsersCount = ConversationUser::where([
-            ConversationUser::FIELD_CONVERSATION_ID => $id,
-            ConversationUser::FIELD_USER_ID => $userId
-        ])->count();
-
-        $conversationDeleted = ConversationUser::where([
-            ConversationUser::FIELD_CONVERSATION_ID => $id,
-            ConversationUser::FIELD_USER_ID => $userId
-        ])->delete();
-
-        // If the last user in a conversation deletes his/her own relationship to this conversation,
-        // we need to delete the conversation since it's no longer needed.
-        if ($conversationUsersCount <= 1 && $conversationDeleted) {
-            Conversation::where(Conversation::FIELD_PK, $id)->delete();
-        }
-
-        return $conversationDeleted;
-    }
-
-    /**
-     *
-     * @param int $conversationId
-     * @param int $senderId
-     * @param string $text
-     * @param Carbon|null $createdAt
-     * @return Model|null
-     */
-    public function createReply(int $conversationId, int $senderId, string $text, Carbon $createdAt = null)
+    public function createReply(int $conversationId, int $senderId, string $text) : ?ConversationReply
     {
         DB::beginTransaction();
 
@@ -164,15 +89,14 @@ class ChatRepository implements ChatRepositoryInterface
         }
     }
 
-    /**
-     * Get the replies in a specific conversation.
-     *
-     * @param int $conversationId
-     * @param int $userId
-     * @param int $limit
-     * @param int $offset
-     * @return Collection
-     */
+    public function addUserToConversation(int $userId, int $conversationId) : bool
+    {
+        return (bool) (new ConversationUser())
+            ->setConversationId($conversationId)
+            ->setUserId($userId)
+            ->save();
+    }
+
     public function getReplies(int $conversationId, int $userId, int $limit = 15, int $offset = 0) : Collection
     {
         return ConversationReply::with('sender')
@@ -184,14 +108,6 @@ class ChatRepository implements ChatRepositoryInterface
             ->get();
     }
 
-    /**
-     * Get new replies of a conversation using a time marker.
-     *
-     * @param int $conversationId
-     * @param int $userId
-     * @param Carbon $time
-     * @return Collection
-     */
     public function getNewReplies(int $conversationId, int $userId, Carbon $time) : Collection
     {
         return ConversationReply::with('sender')
@@ -201,16 +117,7 @@ class ChatRepository implements ChatRepositoryInterface
             })->where('created_at', '>', $time)->get();
     }
 
-    /**
-     * Get a conversation with its replies for a specific user.
-     *
-     * @param int $conversationId
-     * @param int $userId
-     * @param int $limit
-     * @param int $offset
-     * @return Model|null
-     */
-    public function getConversationWithReplies(int $conversationId, int $userId, int $limit = 15, int $offset = 0)
+    public function getConversationWithReplies(int $conversationId, int $userId, int $limit = 15, int $offset = 0) : ?Conversation
     {
         return Conversation::whereHas('users', function ($query) use ($userId, $limit, $offset) {
 
@@ -225,13 +132,27 @@ class ChatRepository implements ChatRepositoryInterface
         }])->find($conversationId);
     }
 
-    /**
-     * Delete a specific reply for user.
-     *
-     * @param int $replyId
-     * @param int $userId
-     * @return bool
-     */
+    public function deleteConversation(int $id, int $userId) : bool
+    {
+        $conversationUsersCount = ConversationUser::where([
+            ConversationUser::FIELD_CONVERSATION_ID => $id,
+            ConversationUser::FIELD_USER_ID => $userId
+        ])->count();
+
+        $conversationDeleted = ConversationUser::where([
+            ConversationUser::FIELD_CONVERSATION_ID => $id,
+            ConversationUser::FIELD_USER_ID => $userId
+        ])->delete();
+
+        // If the last user in a conversation deletes his/her own relationship to this conversation,
+        // we need to delete the conversation since it's no longer needed.
+        if ($conversationUsersCount <= 1 && $conversationDeleted) {
+            Conversation::where(Conversation::FIELD_PK, $id)->delete();
+        }
+
+        return $conversationDeleted;
+    }
+
     public function deleteReply(int $replyId, int $userId) : bool
     {
         $replyUsersCount = ConversationReplyUser::where([
@@ -251,12 +172,6 @@ class ChatRepository implements ChatRepositoryInterface
         return $replyDeleted;
     }
 
-    /**
-     * Get an array of the users involved in a specific conversation.
-     *
-     * @param int $conversationId
-     * @return Collection
-     */
     private function getConversationUsers(int $conversationId) : Collection
     {
         return ConversationUser::where(ConversationUser::FIELD_CONVERSATION_ID, $conversationId)->get();

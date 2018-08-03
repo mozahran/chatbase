@@ -188,18 +188,14 @@ class ChatRepository implements ChatRepositoryInterface
         return $replyDeleted;
     }
 
-    private function getConversationUsers(Conversation $conversation) : Collection
+    private function getConversationUsers(Conversation $conversation) : \Illuminate\Support\Collection
     {
-        $users = new Collection();
-
         $relations = ConversationUser::where(ConversationUser::FIELD_CONVERSATION_ID, $conversation->getId())
             ->with('user')
             ->get();
 
-        foreach ($relations as $relation) {
-            $users->add($relation->user);
-        }
-
-        return $users;
+        return collect($relations)->map(function ($relation) {
+            return $relation->user;
+        });
     }
 }

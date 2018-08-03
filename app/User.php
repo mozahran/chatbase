@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -31,11 +31,6 @@ class User extends Authenticatable
     const STATUS_SUSPENDED = 1;
     const STATUS_NOT_SUSPENDED = 0;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         self::FIELD_NAME,
         self::FIELD_EMAIL,
@@ -49,11 +44,6 @@ class User extends Authenticatable
         self::FIELD_IS_ACTIVE => 'boolean',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         self::FIELD_PASSWORD,
         self::FIELD_REMEMBER_TOKEN,
@@ -63,129 +53,66 @@ class User extends Authenticatable
     // Getters
     // ----------------------------------------------------------------------
 
-    /**
-     * Get the user Id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_PK);
+        return $this->getAttribute(self::FIELD_PK);
     }
 
-    /**
-     * Get the name of the user.
-     *
-     * @return mixed
-     */
-    public function getName()
+    public function getName() : ?string
     {
         return $this->getAttribute(self::FIELD_NAME);
     }
 
-    /**
-     * Get the email of the user.
-     *
-     * @return mixed
-     */
-    public function getEmail()
+    public function getEmail() : ?string
     {
         return $this->getAttribute(self::FIELD_EMAIL);
     }
 
-    /**
-     * Checks if the user is active.
-     *
-     * @return bool
-     */
-    public function isActive() : bool
+    public function isActive() : ?bool
     {
         return $this->getAttribute(self::FIELD_IS_ACTIVE);
     }
 
-    /**
-     * Checks if the user is active.
-     *
-     * @return bool
-     */
-    public function isSuspended()
+    public function isSuspended() : ?bool
     {
-        return (bool) $this->getAttribute(self::FIELD_IS_SUSPENDED);
+        return $this->getAttribute(self::FIELD_IS_SUSPENDED);
     }
 
     // ----------------------------------------------------------------------
     // Setters
     // ----------------------------------------------------------------------
 
-    /**
-     * Set the name of the user.
-     *
-     * @param string $name
-     * @return $this
-     */
-    public function setName(string $name)
+    public function setName(string $name) : self
     {
         return $this->setAttribute(self::FIELD_NAME, $name);
     }
 
-    /**
-     * Set the email of the user.
-     *
-     * @param string $email
-     * @return $this
-     */
-    public function setEmail(string $email)
+    public function setEmail(string $email) : self
     {
         return $this->setAttribute(self::FIELD_EMAIL, $email);
     }
 
-    /**
-     * Set the password of the user.
-     *
-     * @param $value
-     * @return string
-     */
-    public function setPassword($value)
+    public function setPassword($value) : self
     {
         return $this->setAttribute(self::FIELD_PASSWORD, bcrypt($value));
     }
 
-    /**
-     * Set the user as active.
-     *
-     * @return $this
-     */
-    public function setActive()
+    public function setActive() : self
     {
         return $this->setAttribute(self::FIELD_IS_ACTIVE, true);
     }
 
-    /**
-     * Set the user as inactive.
-     *
-     * @return $this
-     */
-    public function setInactive()
+    public function setInactive() : self
     {
         return $this->setAttribute(self::FIELD_IS_ACTIVE, false);
     }
 
-    /**
-     * Set the user as suspended.
-     *
-     * @return $this
-     */
-    public function setSuspended()
+    public function setSuspended() : self
     {
         return $this->setAttribute(self::FIELD_IS_SUSPENDED, true);
     }
 
-    /**
-     * Set the user as not-suspended.
-     *
-     * @return $this
-     */
-    public function setNotSuspended()
+    public function setNotSuspended() : self
     {
         return $this->setAttribute(self::FIELD_IS_SUSPENDED, false);
     }
@@ -195,45 +122,41 @@ class User extends Authenticatable
     // ----------------------------------------------------------------------
 
     /**
-     * Scope active users.
+     * @param Builder $query
      *
-     * @param $query
-     * @return mixed
+     * @return Builder
      */
-    public function scopeActive($query)
+    public function scopeActive(Builder $query) : Builder
     {
         return $query->where(self::FIELD_IS_ACTIVE, true);
     }
 
     /**
-     * Scope inactive users.
+     * @param Builder $query
      *
-     * @param $query
-     * @return mixed
+     * @return Builder
      */
-    public function scopeInactive($query)
+    public function scopeInactive(Builder $query) : Builder
     {
         return $query->where(self::FIELD_IS_ACTIVE, false);
     }
 
     /**
-     * Scope suspended users.
+     * @param Builder $query
      *
-     * @param $query
-     * @return mixed
+     * @return Builder
      */
-    public function scopeSuspended($query)
+    public function scopeSuspended(Builder $query) : Builder
     {
         return $query->where(self::FIELD_IS_SUSPENDED, true);
     }
 
     /**
-     * Scope users that are not suspended.
+     * @param Builder $query
      *
-     * @param $query
-     * @return mixed
+     * @return Builder
      */
-    public function scopeNotSuspended($query)
+    public function scopeNotSuspended(Builder $query) : Builder
     {
         return $query->where(self::FIELD_IS_SUSPENDED, false);
     }
@@ -242,12 +165,7 @@ class User extends Authenticatable
     // Relationships
     // ----------------------------------------------------------------------
 
-    /**
-     * The conversations that the user is involved in.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function conversations()
+    public function conversations() : \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(
             Conversation::class,

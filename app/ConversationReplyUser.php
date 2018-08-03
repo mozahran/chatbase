@@ -17,80 +17,39 @@ class ConversationReplyUser extends Pivot
     const FIELD_USER_ID = 'user_id';
     const FIELD_SEEN_AT = 'seen_at';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         self::FIELD_CONVERSATION_REPLY_ID,
         self::FIELD_USER_ID,
         self::FIELD_SEEN_AT,
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         self::FIELD_CONVERSATION_REPLY_ID => 'integer',
         self::FIELD_USER_ID => 'integer',
     ];
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
     protected $dates = [
         self::FIELD_SEEN_AT,
     ];
 
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
     public $incrementing = false;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
     public $timestamps = false;
 
     // ----------------------------------------------------------------------
     // Getters
     // ----------------------------------------------------------------------
 
-    /**
-     * Get the conversation reply Id.
-     *
-     * @return int
-     */
-    public function getConversationReplyId()
+    public function getConversationReplyId() : ?int
     {
         return (int) $this->getAttribute(self::FIELD_CONVERSATION_REPLY_ID);
     }
 
-    /**
-     * Get the user Id.
-     *
-     * @return int
-     */
-    public function getUserId()
+    public function getUserId() : ?int
     {
         return (int) $this->getAttribute(self::FIELD_USER_ID);
     }
 
-    /**
-     * Get the time of seeing the reply.
-     *
-     * @return mixed
-     */
-    public function getSeenAt()
+    public function getSeenAt() : ?Carbon
     {
         return $this->getAttribute(self::FIELD_SEEN_AT);
     }
@@ -99,35 +58,17 @@ class ConversationReplyUser extends Pivot
     // Setters
     // ----------------------------------------------------------------------
 
-    /**
-     * Set the conversation reply Id.
-     *
-     * @param int $id
-     * @return $this
-     */
-    public function setConversationReplyId(int $id)
+    public function setConversationReplyId(int $id) : self
     {
         return $this->setAttribute(self::FIELD_CONVERSATION_REPLY_ID, $id);
     }
 
-    /**
-     * Set the user Id.
-     *
-     * @param int $id
-     * @return $this
-     */
-    public function setUserId(int $id)
+    public function setUserId(int $id) : self
     {
         return $this->setAttribute(self::FIELD_USER_ID, $id);
     }
 
-    /**
-     * Set the time of seeing the reply.
-     *
-     * @param Carbon $seenAt
-     * @return $this
-     */
-    public function setSeenAt(Carbon $seenAt)
+    public function setSeenAt(Carbon $seenAt) : self
     {
         return $this->setAttribute(self::FIELD_SEEN_AT, $seenAt);
     }
@@ -136,12 +77,7 @@ class ConversationReplyUser extends Pivot
     // Relationships
     // ----------------------------------------------------------------------
 
-    /**
-     * The reply that the user is allowed to see.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function reply()
+    public function reply() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             ConversationReply::class,
@@ -150,12 +86,7 @@ class ConversationReplyUser extends Pivot
         );
     }
 
-    /**
-     * The user that is allowed to see the reply.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
+    public function user() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             User::class,

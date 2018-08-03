@@ -54,8 +54,8 @@ class Conversation extends Model
     {
         return $this->belongsTo(
             User::class,
-            User::FIELD_PK,
-            self::FIELD_CREATOR_ID
+            self::FIELD_CREATOR_ID,
+            User::FIELD_PK
         );
     }
 

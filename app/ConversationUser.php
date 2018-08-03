@@ -60,7 +60,7 @@ class ConversationUser extends Pivot
     // Relationships
     // ----------------------------------------------------------------------
 
-    public function conversation() :? \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function conversation() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             Conversation::class,
@@ -69,7 +69,7 @@ class ConversationUser extends Pivot
         );
     }
 
-    public function user() :? \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function user() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             User::class,

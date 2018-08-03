@@ -4,47 +4,48 @@ namespace App\Repositories\Interfaces;
 
 use App\Conversation;
 use App\ConversationReply;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 interface ChatRepositoryInterface
 {
-    public function getConversations(int $userId, $limit = 15, $offset = 0) : Collection;
+    public function getConversations(User $user, $limit = 15, $offset = 0) : Collection;
 
-    public function getConversation(int $id, int $userId) : ?Conversation;
+    public function getConversation(int $id, User $user) : ?Conversation;
 
-    public function createConversation(int $creatorId, array $users) : ?Conversation;
+    public function createConversation(User $user, array $users) : ?Conversation;
 
     public function createReply(
-        int $conversationId,
-        int $senderId,
+        Conversation $conversation,
+        User $sender,
         string $text,
         Carbon $createdAt = null
     ) : ?ConversationReply;
 
-    public function addUserToConversation(int $userId, int $conversationId) : bool;
+    public function addUserToConversation(User $user, Conversation $conversation) : bool;
 
     public function getReplies(
-        int $conversationId,
-        int $userId,
+        Conversation $conversation,
+        User $user,
         int $limit = 15,
         int $offset = 0
     ) : Collection;
 
     public function getNewReplies(
-        int $conversationId,
-        int $userId,
+        Conversation $conversation,
+        User $user,
         Carbon $time
     ) : Collection;
 
     public function getConversationWithReplies(
-        int $conversationId,
-        int $userId,
+        Conversation $conversation,
+        User $user,
         int $limit = 15,
         int $offset = 0
     ) : ?Conversation;
 
-    public function deleteConversation(int $id, int $userId) : bool;
+    public function deleteConversation(int $id, User $user) : bool;
 
-    public function deleteReply(int $replyId, int $userId) : bool;
+    public function deleteReply(ConversationReply $reply, User $user) : bool;
 }

@@ -41,12 +41,12 @@ class ConversationReplyUser extends Pivot
 
     public function getConversationReplyId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_CONVERSATION_REPLY_ID);
+        return $this->getAttribute(self::FIELD_CONVERSATION_REPLY_ID);
     }
 
     public function getUserId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_USER_ID);
+        return $this->getAttribute(self::FIELD_USER_ID);
     }
 
     public function getSeenAt() : ?Carbon
@@ -58,14 +58,14 @@ class ConversationReplyUser extends Pivot
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setConversationReplyId(int $id) : self
+    public function setConversationReply(ConversationReply $reply) : self
     {
-        return $this->setAttribute(self::FIELD_CONVERSATION_REPLY_ID, $id);
+        return $this->setAttribute(self::FIELD_CONVERSATION_REPLY_ID, $reply->getId());
     }
 
-    public function setUserId(int $id) : self
+    public function setUser(User $user) : self
     {
-        return $this->setAttribute(self::FIELD_USER_ID, $id);
+        return $this->setAttribute(self::FIELD_USER_ID, $user->getId());
     }
 
     public function setSeenAt(Carbon $seenAt) : self

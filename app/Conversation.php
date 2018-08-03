@@ -41,9 +41,9 @@ class Conversation extends Model
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setCreatorId(int $id) : self
+    public function setCreator(User $user) : self
     {
-        return $this->setAttribute(self::FIELD_CREATOR_ID, $id);
+        return $this->setAttribute(self::FIELD_CREATOR_ID, $user->getId());
     }
 
     // ----------------------------------------------------------------------
@@ -83,6 +83,6 @@ class Conversation extends Model
             ConversationUser::class,
             ConversationUser::FIELD_CONVERSATION_ID,
             self::FIELD_PK
-        )->with('user.image');
+        );
     }
 }

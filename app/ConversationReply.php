@@ -57,14 +57,14 @@ class ConversationReply extends Model
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setConversationId(int $id) : self
+    public function setConversation(Conversation $conversation) : self
     {
-        return $this->setAttribute(self::FIELD_CONVERSATION_ID, $id);
+        return $this->setAttribute(self::FIELD_CONVERSATION_ID, $conversation->getId());
     }
 
-    public function setSenderId(int $id) : self
+    public function setSender(User $sender) : self
     {
-        return $this->setAttribute(self::FIELD_SENDER_ID, $id);
+        return $this->setAttribute(self::FIELD_SENDER_ID, $sender->getId());
     }
 
     public function setText(string $text) : self
@@ -76,9 +76,9 @@ class ConversationReply extends Model
     // Scope
     // ----------------------------------------------------------------------
 
-    public function scopeOfConversation(Builder $query, int $id) : Builder
+    public function scopeOfConversation(Builder $query, Conversation $conversation) : Builder
     {
-        return $query->where(self::FIELD_CONVERSATION_ID, $id);
+        return $query->where(self::FIELD_CONVERSATION_ID, $conversation->getId());
     }
 
     // ----------------------------------------------------------------------

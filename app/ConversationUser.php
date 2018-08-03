@@ -46,14 +46,14 @@ class ConversationUser extends Pivot
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setConversationId(int $id) : self
+    public function setConversation(Conversation $conversation) : self
     {
-        return $this->setAttribute(self::FIELD_CONVERSATION_ID, $id);
+        return $this->setAttribute(self::FIELD_CONVERSATION_ID, $conversation->getId());
     }
 
-    public function setUserId(int $id) : self
+    public function setUser(User $user) : self
     {
-        return $this->setAttribute(self::FIELD_USER_ID, $id);
+        return $this->setAttribute(self::FIELD_USER_ID, $user->getId());
     }
 
     // ----------------------------------------------------------------------
@@ -75,6 +75,6 @@ class ConversationUser extends Pivot
             User::class,
             self::FIELD_USER_ID,
             User::FIELD_PK
-        )->with('image');
+        );
     }
 }

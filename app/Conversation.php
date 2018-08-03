@@ -15,20 +15,10 @@ class Conversation extends Model
     const FIELD_PK = 'id';
     const FIELD_CREATOR_ID = 'creator_id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         self::FIELD_CREATOR_ID,
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         self::FIELD_CREATOR_ID => 'integer',
     ];
@@ -37,37 +27,21 @@ class Conversation extends Model
     // Getters
     // ----------------------------------------------------------------------
 
-    /**
-     * Get the conversation Id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_PK);
+        return $this->getAttribute(self::FIELD_PK);
     }
 
-    /**
-     * Get the Id of the conversation creator.
-     *
-     * @return int
-     */
-    public function getCreatorId()
+    public function getCreatorId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_CREATOR_ID);
+        return $this->getAttribute(self::FIELD_CREATOR_ID);
     }
 
     // ----------------------------------------------------------------------
     // Setters
     // ----------------------------------------------------------------------
 
-    /**
-     * Set the Id of the conversation creator.
-     *
-     * @param int $id
-     * @return $this
-     */
-    public function setCreatorId(int $id)
+    public function setCreatorId(int $id) : self
     {
         return $this->setAttribute(self::FIELD_CREATOR_ID, $id);
     }
@@ -76,13 +50,7 @@ class Conversation extends Model
     // Relationships
     // ----------------------------------------------------------------------
 
-    /**
-     * The user that the conversation belongs to.
-     * (the creator of the conversation)
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function creator()
+    public function creator() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             User::class,
@@ -91,12 +59,7 @@ class Conversation extends Model
         );
     }
 
-    /**
-     * The replies that belongs to the conversation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function replies()
+    public function replies() : ?\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(
             ConversationReply::class,
@@ -105,12 +68,7 @@ class Conversation extends Model
         );
     }
 
-    /**
-     * The last reply in the conversation.
-     *
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function lastReply()
+    public function lastReply() : ?\Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(
             ConversationReply::class,
@@ -119,12 +77,7 @@ class Conversation extends Model
         )->latest('created_at');
     }
 
-    /**
-     * The users that are involved in the conversation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function users()
+    public function users() : ?\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(
             ConversationUser::class,

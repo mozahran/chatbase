@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\ConversationReply;
 use App\Repositories\ChatRepository;
+use App\Repositories\Interfaces\ChatRepositoryInterface;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,6 +13,7 @@ class ChatsTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @var ChatRepositoryInterface */
     private $repository;
 
     public function __construct(string $name = null, array $data = [], string $dataName = '')

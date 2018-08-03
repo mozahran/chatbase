@@ -57,7 +57,12 @@ class ChatRepository implements ChatRepositoryInterface
         }
     }
 
-    public function createReply(int $conversationId, int $senderId, string $text) : ?ConversationReply
+    public function createReply(
+        int $conversationId,
+        int $senderId,
+        string $text,
+        Carbon $createdAt = null
+    ) : ?ConversationReply
     {
         DB::beginTransaction();
 
@@ -97,7 +102,12 @@ class ChatRepository implements ChatRepositoryInterface
             ->save();
     }
 
-    public function getReplies(int $conversationId, int $userId, int $limit = 15, int $offset = 0) : Collection
+    public function getReplies(
+        int $conversationId,
+        int $userId,
+        int $limit = 15,
+        int $offset = 0
+    ) : Collection
     {
         return ConversationReply::with('sender')
             ->ofConversation($conversationId)
@@ -108,7 +118,11 @@ class ChatRepository implements ChatRepositoryInterface
             ->get();
     }
 
-    public function getNewReplies(int $conversationId, int $userId, Carbon $time) : Collection
+    public function getNewReplies(
+        int $conversationId,
+        int $userId,
+        Carbon $time
+    ) : Collection
     {
         return ConversationReply::with('sender')
             ->ofConversation($conversationId)
@@ -117,7 +131,12 @@ class ChatRepository implements ChatRepositoryInterface
             })->where('created_at', '>', $time)->get();
     }
 
-    public function getConversationWithReplies(int $conversationId, int $userId, int $limit = 15, int $offset = 0) : ?Conversation
+    public function getConversationWithReplies(
+        int $conversationId,
+        int $userId,
+        int $limit = 15,
+        int $offset = 0
+    ) : ?Conversation
     {
         return Conversation::whereHas('users', function ($query) use ($userId, $limit, $offset) {
 

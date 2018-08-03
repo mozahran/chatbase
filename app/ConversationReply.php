@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class ConversationReply extends Model
@@ -17,22 +18,12 @@ class ConversationReply extends Model
     const FIELD_SENDER_ID = 'sender_id';
     const FIELD_TEXT = 'text';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         self::FIELD_CONVERSATION_ID,
         self::FIELD_SENDER_ID,
         self::FIELD_TEXT,
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         self::FIELD_CONVERSATION_ID => 'integer',
         self::FIELD_SENDER_ID => 'integer',
@@ -42,42 +33,22 @@ class ConversationReply extends Model
     // Getters
     // ----------------------------------------------------------------------
 
-    /**
-     * Get the reply Id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_PK);
+        return $this->getAttribute(self::FIELD_PK);
     }
 
-    /**
-     * Get the conversation Id.
-     *
-     * @return int
-     */
-    public function getConversationId()
+    public function getConversationId() :? int
     {
-        return (int) $this->getAttribute(self::FIELD_CONVERSATION_ID);
+        return $this->getAttribute(self::FIELD_CONVERSATION_ID);
     }
 
-    /**
-     * Get the sender Id.
-     *
-     * @return int
-     */
-    public function getSenderId()
+    public function getSenderId() :? int
     {
-        return (int) $this->getAttribute(self::FIELD_SENDER_ID);
+        return $this->getAttribute(self::FIELD_SENDER_ID);
     }
 
-    /**
-     * Get the reply text.
-     *
-     * @return mixed
-     */
-    public function getText()
+    public function getText() : ?string
     {
         return $this->getAttribute(self::FIELD_TEXT);
     }
@@ -86,35 +57,17 @@ class ConversationReply extends Model
     // Setters
     // ----------------------------------------------------------------------
 
-    /**
-     * Set the conversation Id.
-     *
-     * @param int $id
-     * @return ConversationReply
-     */
-    public function setConversationId(int $id)
+    public function setConversationId(int $id) : self
     {
         return $this->setAttribute(self::FIELD_CONVERSATION_ID, $id);
     }
 
-    /**
-     * Set the sender Id.
-     *
-     * @param int $id
-     * @return ConversationReply
-     */
-    public function setSenderId(int $id)
+    public function setSenderId(int $id) : self
     {
         return $this->setAttribute(self::FIELD_SENDER_ID, $id);
     }
 
-    /**
-     * Set the reply text.
-     *
-     * @param string $text
-     * @return mixed
-     */
-    public function setText(string $text)
+    public function setText(string $text) : self
     {
         return $this->setAttribute(self::FIELD_TEXT, $text);
     }
@@ -123,14 +76,7 @@ class ConversationReply extends Model
     // Scope
     // ----------------------------------------------------------------------
 
-    /**
-     * Scope replies by conversation Id.
-     *
-     * @param $query
-     * @param int $id
-     * @return mixed
-     */
-    public function scopeOfConversation($query, int $id)
+    public function scopeOfConversation(Builder $query, int $id) : Builder
     {
         return $query->where(self::FIELD_CONVERSATION_ID, $id);
     }
@@ -139,12 +85,7 @@ class ConversationReply extends Model
     // Relationships
     // ----------------------------------------------------------------------
 
-    /**
-     * The conversation that the reply belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function conversation()
+    public function conversation() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             Conversation::class,
@@ -153,13 +94,7 @@ class ConversationReply extends Model
         );
     }
 
-    /**
-     * The user that the reply belongs to.
-     * (the sender of the reply)
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function sender()
+    public function sender() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             User::class,
@@ -168,12 +103,7 @@ class ConversationReply extends Model
         );
     }
 
-    /**
-     * The recipients of the reply.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function recipients()
+    public function recipients() : ?\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(
             ConversationReplyUser::class,

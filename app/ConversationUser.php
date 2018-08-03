@@ -15,86 +15,43 @@ class ConversationUser extends Pivot
     const FIELD_CONVERSATION_ID = 'conversation_id';
     const FIELD_USER_ID = 'user_id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         self::FIELD_CONVERSATION_ID,
         self::FIELD_USER_ID,
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         self::FIELD_CONVERSATION_ID => 'integer',
         self::FIELD_USER_ID => 'integer',
     ];
 
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
     public $incrementing = false;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
     public $timestamps = false;
 
     // ----------------------------------------------------------------------
     // Getters
     // ----------------------------------------------------------------------
 
-    /**
-     * Get the conversation Id.
-     *
-     * @return int
-     */
-    public function getConversationId()
+    public function getConversationId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_CONVERSATION_ID);
+        return $this->getAttribute(self::FIELD_CONVERSATION_ID);
     }
 
-    /**
-     * Get the user Id.
-     *
-     * @return int
-     */
-    public function getUserId()
+    public function getUserId() : ?int
     {
-        return (int) $this->getAttribute(self::FIELD_USER_ID);
+        return $this->getAttribute(self::FIELD_USER_ID);
     }
 
     // ----------------------------------------------------------------------
     // Setters
     // ----------------------------------------------------------------------
 
-    /**
-     * Set the conversation Id.
-     *
-     * @param int $id
-     * @return $this
-     */
-    public function setConversationId(int $id)
+    public function setConversationId(int $id) : self
     {
         return $this->setAttribute(self::FIELD_CONVERSATION_ID, $id);
     }
 
-    /**
-     * Set the user Id.
-     *
-     * @param int $id
-     * @return $this
-     */
-    public function setUserId(int $id)
+    public function setUserId(int $id) : self
     {
         return $this->setAttribute(self::FIELD_USER_ID, $id);
     }
@@ -103,12 +60,7 @@ class ConversationUser extends Pivot
     // Relationships
     // ----------------------------------------------------------------------
 
-    /**
-     * The reply that the user is allowed to see.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function conversation()
+    public function conversation() :? \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             Conversation::class,
@@ -117,12 +69,7 @@ class ConversationUser extends Pivot
         );
     }
 
-    /**
-     * The user that is allowed to see the reply.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
+    public function user() :? \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
             User::class,

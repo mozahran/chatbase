@@ -75,6 +75,7 @@ class ChatsTest extends TestCase
     public function testGetReplies()
     {
         $conversation = $this->repository->createConversation(1, [1, 2]);
+
         $this->repository->createReply($conversation->getId(), 1, 'foo');
         $this->repository->createReply($conversation->getId(), 1, 'bar');
 
@@ -101,6 +102,7 @@ class ChatsTest extends TestCase
     public function testGetConversationWithReplies()
     {
         $conversation = $this->repository->createConversation(1, [1, 2]);
+
         $this->repository->createReply($conversation->getId(), 1, 'foo');
         $this->repository->createReply($conversation->getId(), 2, 'bar');
 
@@ -113,6 +115,7 @@ class ChatsTest extends TestCase
     public function testDeleteReply()
     {
         $conversation = $this->repository->createConversation(1, [1,2]);
+
         $reply = $this->repository->createReply($conversation->getId(), 1, 'foo');
 
         $deleted = $this->repository->deleteReply($reply->getId(), 1);

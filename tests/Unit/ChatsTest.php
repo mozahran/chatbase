@@ -97,6 +97,17 @@ class ChatsTest extends TestCase
         $this->assertEquals(1, $count);
     }
 
+    public function testCountReplyUsers()
+    {
+        $user = $this->createUser();
+        $conversation = $this->createConversation($user);
+        $reply = $this->createReply($conversation, $user, 'foo');
+
+        $count = $this->repository->countReplyUsers($reply);
+
+        $this->assertEquals(1, $count);
+    }
+
     public function testCreateReply()
     {
         $user = $this->createUser();

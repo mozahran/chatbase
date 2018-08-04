@@ -128,10 +128,7 @@ class ChatManager implements ChatManagerInterface
 
     public function deleteReply(ConversationReply $reply, User $user) : bool
     {
-        $replyUsersCount = ConversationReplyUser::where([
-            ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID => $reply->getId(),
-            ConversationReplyUser::FIELD_USER_ID => $user->getId()
-        ])->count();
+        $replyUsersCount = $this->repository->countReplyUsers($reply);
 
         $replyDeleted = ConversationReplyUser::where(ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID, $reply->getId())
             ->where(ConversationReplyUser::FIELD_USER_ID, $user->getId())

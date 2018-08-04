@@ -37,4 +37,6 @@ interface ChatRepositoryInterface
     public function getConversationUsers(Conversation $conversation) : \Illuminate\Support\Collection;
 
     public function countConversationUsers(Conversation $conversation) : int;
+
+    public function countReplyUsers(ConversationReply $reply) : int;
 }

@@ -92,4 +92,11 @@ class ChatRepository implements ChatRepositoryInterface
             ConversationUser::FIELD_CONVERSATION_ID => $conversation->getId(),
         ])->count();
     }
+
+    public function countReplyUsers(ConversationReply $reply) : int
+    {
+        return ConversationReplyUser::where([
+            ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID => $reply->getId(),
+        ])->count();
+    }
 }

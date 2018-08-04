@@ -14,17 +14,6 @@ interface ChatRepositoryInterface
 
     public function getConversation(int $id, User $user) : ?Conversation;
 
-    public function createConversation(User $user, array $users) : ?Conversation;
-
-    public function createReply(
-        Conversation $conversation,
-        User $sender,
-        string $text,
-        Carbon $createdAt = null
-    ) : ?ConversationReply;
-
-    public function addUserToConversation(User $user, Conversation $conversation) : bool;
-
     public function getReplies(
         Conversation $conversation,
         User $user,
@@ -45,7 +34,7 @@ interface ChatRepositoryInterface
         int $offset = 0
     ) : ?Conversation;
 
-    public function deleteConversation(int $id, User $user) : bool;
+    public function getConversationUsers(Conversation $conversation) : \Illuminate\Support\Collection;
 
-    public function deleteReply(ConversationReply $reply, User $user) : bool;
+    public function countConversationUsers(Conversation $conversation) : int;
 }

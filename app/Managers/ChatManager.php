@@ -2,16 +2,16 @@
 
 namespace App\Managers;
 
-use App\ConversationReplyUser;
-use App\Repositories\ChatRepository;
-use App\Repositories\Interfaces\ChatRepositoryInterface;
 use DB;
 use App\User;
 use Carbon\Carbon;
 use App\Conversation;
 use App\ConversationUser;
 use App\ConversationReply;
+use App\ConversationReplyUser;
+use App\Repositories\ChatRepository;
 use App\Managers\Contracts\ChatManagerInterface;
+use App\Repositories\Interfaces\ChatRepositoryInterface;
 
 class ChatManager implements ChatManagerInterface
 {

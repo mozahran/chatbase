@@ -2,15 +2,15 @@
 
 namespace App\Repositories;
 
-use App\User;
 use DB;
+use App\User;
 use Carbon\Carbon;
 use App\Conversation;
+use App\ConversationUser;
 use App\ConversationReply;
 use App\ConversationReplyUser;
-use App\ConversationUser;
-use App\Repositories\Interfaces\ChatRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use App\Repositories\Interfaces\ChatRepositoryInterface;
 
 class ChatRepository implements ChatRepositoryInterface
 {

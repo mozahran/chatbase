@@ -2,10 +2,10 @@
 
 namespace App\Repositories\Interfaces;
 
-use App\Conversation;
-use App\ConversationReply;
 use App\User;
 use Carbon\Carbon;
+use App\Conversation;
+use App\ConversationReply;
 use Illuminate\Database\Eloquent\Collection;
 
 interface ChatRepositoryInterface

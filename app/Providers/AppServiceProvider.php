@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Managers\ChatManager;
+use App\Managers\Contracts\ChatManagerInterface;
 use App\Repositories\ChatRepository;
 use App\Repositories\Interfaces\ChatRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->bind(ChatRepositoryInterface::class, ChatRepository::class);
+        $this->app->bind(ChatManagerInterface::class, ChatManager::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
     }
 

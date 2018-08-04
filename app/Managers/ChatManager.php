@@ -38,9 +38,9 @@ class ChatManager implements ChatManagerInterface
             $conversation->setCreator($creator);
             $conversation->save();
 
-            foreach ($recipients as $recipient) {
+            collect($recipients)->map(function($recipient) use ($conversation) {
                 $this->addUserToConversation($recipient, $conversation);
-            }
+            });
 
             DB::commit();
 
@@ -73,10 +73,10 @@ class ChatManager implements ChatManagerInterface
             $users = $this->repository->getConversationUsers($conversation);
 
             collect ($users)->map(function ($user) use ($reply) {
-                $replyUser = new ConversationReplyUser;
-                $replyUser->setUser($user);
-                $replyUser->setConversationReply($reply);
-                $replyUser->save();
+                (new ConversationReplyUser)
+                    ->setUser($user)
+                    ->setConversationReply($reply)
+                    ->save();
             });
 
             DB::commit();

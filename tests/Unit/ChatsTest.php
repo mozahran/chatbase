@@ -100,18 +100,20 @@ class ChatsTest extends TestCase
     public function testCountReplyUsers()
     {
         $user = $this->createUser();
+        $recipients = [$this->createUser(), $this->createUser()];
         $conversation = $this->createConversation($user);
-        $reply = $this->createReply($conversation, $user, 'foo');
+        $reply = $this->createReply($conversation, $user, $recipients, 'foo');
 
         $count = $this->repository->countReplyUsers($reply);
 
-        $this->assertEquals(1, $count);
+        $this->assertEquals(3, $count);
     }
 
     public function testCreateReply()
     {
         $user = $this->createUser();
-        $conversation = $this->createConversation($user);
+        $recipients = [$this->createUser(), $this->createUser()];
+        $conversation = $this->createConversation($user, $recipients);
 
         $created = $this->manager->createReply($conversation, $user, 'foo');
 
@@ -121,10 +123,11 @@ class ChatsTest extends TestCase
     public function testGetReplies()
     {
         $user = $this->createUser();
+        $recipients = [$this->createUser(), $this->createUser()];
         $conversation = $this->createConversation($user);
 
-        $this->createReply($conversation, $user, 'foo');
-        $this->createReply($conversation, $user, 'bar');
+        $this->createReply($conversation, $user, $recipients, 'foo');
+        $this->createReply($conversation, $user, $recipients, 'bar');
 
         $results = $this->repository->getReplies($conversation, $user);
 
@@ -134,13 +137,14 @@ class ChatsTest extends TestCase
     public function testGetNewReplies()
     {
         $user = $this->createUser();
+        $recipients = [$this->createUser(), $this->createUser()];
         $conversation = $this->createConversation($user);
 
         $yesterday = Carbon::now()->subDay();
         $sinceAnHour = Carbon::now()->subHour();
 
-        $this->createReply($conversation, $user, 'foo', $yesterday);
-        $this->createReply($conversation, $user, 'bar', $sinceAnHour);
+        $this->createReply($conversation, $user, $recipients, 'foo', $yesterday);
+        $this->createReply($conversation, $user, $recipients, 'bar', $sinceAnHour);
 
         $results = $this->repository->getNewReplies($conversation, $user, $yesterday);
 
@@ -150,10 +154,11 @@ class ChatsTest extends TestCase
     public function testGetConversationWithReplies()
     {
         $user = $this->createUser();
+        $recipients = [$this->createUser(), $this->createUser()];
         $conversation = $this->createConversation($user);
 
-        $this->createReply($conversation, $user, 'foo');
-        $this->createReply($conversation, $user, 'bar');
+        $this->createReply($conversation, $user, $recipients, 'foo');
+        $this->createReply($conversation, $user, $recipients, 'bar');
 
         $results = $this->repository->getConversationWithReplies($conversation, $user);
 
@@ -164,8 +169,9 @@ class ChatsTest extends TestCase
     public function testDeleteReply()
     {
         $user = $this->createUser();
+        $recipients = [$this->createUser(), $this->createUser()];
         $conversation = $this->createConversation($user);
-        $reply = $this->createReply($conversation, $user, 'foo');
+        $reply = $this->createReply($conversation, $user, $recipients, 'foo');
 
         $deleted = $this->manager->deleteReply($reply, $user);
 
@@ -181,21 +187,31 @@ class ChatsTest extends TestCase
         return factory(User::class)->create();
     }
 
-    private function createConversation(User $user)
+    private function createConversation(User $creator, array $users = null)
     {
         $conversation = factory(Conversation::class)->create([
-            Conversation::FIELD_CREATOR_ID => $user->getId(),
+            Conversation::FIELD_CREATOR_ID => $creator->getId(),
         ]);
 
-        factory(ConversationUser::class)->create([
-            ConversationUser::FIELD_CONVERSATION_ID => $conversation->getId(),
-            ConversationUser::FIELD_USER_ID => $user->getId(),
-        ]);
+        $users[] = $creator;
+
+        collect($users)->map(function (User $user) use ($conversation) {
+            factory(ConversationUser::class)->create([
+                ConversationUser::FIELD_CONVERSATION_ID => $conversation->getId(),
+                ConversationUser::FIELD_USER_ID => $user->getId(),
+            ]);
+        });
 
         return $conversation;
     }
 
-    private function createReply(Conversation $conversation, User $user, string $text, Carbon $createdAt = null)
+    private function createReply(
+        Conversation $conversation,
+        User $user,
+        array $recipients,
+        string $text,
+        Carbon $createdAt = null
+    ) : ?ConversationReply
     {
         $reply = factory(ConversationReply::class)->create([
             ConversationReply::FIELD_CONVERSATION_ID => $conversation->getId(),
@@ -204,10 +220,14 @@ class ChatsTest extends TestCase
             ConversationReply::CREATED_AT => $createdAt
         ]);
 
-        factory(ConversationReplyUser::class)->create([
-            ConversationReplyUser::FIELD_USER_ID => $user->getId(),
-            ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID => $reply->getId(),
-        ]);
+        $recipients[] = $user;
+
+        collect($recipients)->map(function (User $user) use ($reply) {
+            factory(ConversationReplyUser::class)->create([
+                ConversationReplyUser::FIELD_USER_ID => $user->getId(),
+                ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID => $reply->getId(),
+            ]);
+        });
 
         return $reply;
     }

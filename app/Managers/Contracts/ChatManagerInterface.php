@@ -59,9 +59,9 @@ interface ChatManagerInterface
     /**
      * Smart delete a reply.
      *
-     * This method deletes the relation of the user (ConversationReplyUser)
-     * to the actual reply (ConversationReply). If other users are no longer involved in
-     * this reply (have no ConversationRelyUser relations), the actual reply gets deleted as well.
+     * This method deletes the relation of the user (ChatReplyUser)
+     * to the actual reply (ChatReply). If other users are no longer involved in
+     * this reply (have no ChatRelyUser relations), the actual reply gets deleted as well.
      *
      * @param ChatReply $reply
      * @param User $user

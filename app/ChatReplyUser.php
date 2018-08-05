@@ -58,7 +58,7 @@ class ChatReplyUser extends Pivot
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setConversationReply(ChatReply $reply) : self
+    public function setChatReply(ChatReply $reply) : self
     {
         return $this->setAttribute(self::FIELD_CHAT_REPLY_ID, $reply->getId());
     }

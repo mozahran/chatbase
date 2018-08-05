@@ -46,7 +46,7 @@ class ChatUser extends Pivot
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setConversation(Chat $chat) : self
+    public function setChat(Chat $chat) : self
     {
         return $this->setAttribute(self::FIELD_CHAT_ID, $chat->getId());
     }

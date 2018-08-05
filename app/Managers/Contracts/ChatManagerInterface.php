@@ -4,57 +4,57 @@ namespace App\Managers\Contracts;
 
 use App\User;
 use Carbon\Carbon;
-use App\Conversation;
-use App\ConversationReply;
+use App\Chat;
+use App\ChatReply;
 
 interface ChatManagerInterface
 {
     /**
-     * Create a new conversation.
+     * Create a new chat.
      *
      * @param User $user
      * @param array $users
      *
-     * @return Conversation|null
+     * @return Chat|null
      */
-    public function createConversation(User $user, array $users) : ?Conversation;
+    public function createChat(User $user, array $users) : ?Chat;
 
     /**
      * Create a new reply.
      *
-     * @param Conversation $conversation
+     * @param Chat $chat
      * @param User $sender
      * @param string $text
      * @param Carbon|null $createdAt
      *
-     * @return ConversationReply|null
+     * @return ChatReply|null
      */
     public function createReply(
-        Conversation $conversation,
+        Chat $chat,
         User $sender,
         string $text,
         Carbon $createdAt = null
-    ) : ?ConversationReply;
+    ) : ?ChatReply;
 
     /**
-     * Add user to an existing conversation.
+     * Add user to an existing chat.
      *
      * @param User $user
-     * @param Conversation $conversation
+     * @param Chat $chat
      *
      * @return bool
      */
-    public function addUserToConversation(User $user, Conversation $conversation) : bool;
+    public function addUserToChat(User $user, Chat $chat) : bool;
 
     /**
-     * Delete an existing conversation.
+     * Delete an existing chat.
      *
-     * @param Conversation $conversation
+     * @param Chat $chat
      * @param User $user
      *
      * @return bool
      */
-    public function deleteConversation(Conversation $conversation, User $user) : bool;
+    public function deleteChat(Chat $chat, User $user) : bool;
 
     /**
      * Smart delete a reply.
@@ -63,10 +63,10 @@ interface ChatManagerInterface
      * to the actual reply (ConversationReply). If other users are no longer involved in
      * this reply (have no ConversationRelyUser relations), the actual reply gets deleted as well.
      *
-     * @param ConversationReply $reply
+     * @param ChatReply $reply
      * @param User $user
      *
      * @return bool
      */
-    public function deleteReply(ConversationReply $reply, User $user) : bool;
+    public function deleteReply(ChatReply $reply, User $user) : bool;
 }

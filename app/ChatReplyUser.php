@@ -2,27 +2,34 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class ConversationUser extends Pivot
+class ChatReplyUser extends Pivot
 {
     // ----------------------------------------------------------------------
     // Table Schema
     // ----------------------------------------------------------------------
 
-    const TABLE_NAME = 'conversation_user';
+    const TABLE_NAME = 'chat_reply_user';
 
-    const FIELD_CONVERSATION_ID = 'conversation_id';
+    const FIELD_CHAT_REPLY_ID = 'chat_reply_id';
     const FIELD_USER_ID = 'user_id';
+    const FIELD_SEEN_AT = 'seen_at';
 
     protected $fillable = [
-        self::FIELD_CONVERSATION_ID,
+        self::FIELD_CHAT_REPLY_ID,
         self::FIELD_USER_ID,
+        self::FIELD_SEEN_AT,
     ];
 
     protected $casts = [
-        self::FIELD_CONVERSATION_ID => 'integer',
+        self::FIELD_CHAT_REPLY_ID => 'integer',
         self::FIELD_USER_ID => 'integer',
+    ];
+
+    protected $dates = [
+        self::FIELD_SEEN_AT,
     ];
 
     public $incrementing = false;
@@ -32,9 +39,9 @@ class ConversationUser extends Pivot
     // Getters
     // ----------------------------------------------------------------------
 
-    public function getConversationId() : ?int
+    public function getConversationReplyId() : ?int
     {
-        return $this->getAttribute(self::FIELD_CONVERSATION_ID);
+        return $this->getAttribute(self::FIELD_CHAT_REPLY_ID);
     }
 
     public function getUserId() : ?int
@@ -42,13 +49,18 @@ class ConversationUser extends Pivot
         return $this->getAttribute(self::FIELD_USER_ID);
     }
 
+    public function getSeenAt() : ?Carbon
+    {
+        return $this->getAttribute(self::FIELD_SEEN_AT);
+    }
+
     // ----------------------------------------------------------------------
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setConversation(Conversation $conversation) : self
+    public function setConversationReply(ChatReply $reply) : self
     {
-        return $this->setAttribute(self::FIELD_CONVERSATION_ID, $conversation->getId());
+        return $this->setAttribute(self::FIELD_CHAT_REPLY_ID, $reply->getId());
     }
 
     public function setUser(User $user) : self
@@ -56,16 +68,21 @@ class ConversationUser extends Pivot
         return $this->setAttribute(self::FIELD_USER_ID, $user->getId());
     }
 
+    public function setSeenAt(Carbon $seenAt) : self
+    {
+        return $this->setAttribute(self::FIELD_SEEN_AT, $seenAt);
+    }
+
     // ----------------------------------------------------------------------
     // Relationships
     // ----------------------------------------------------------------------
 
-    public function conversation() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function reply() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
-            Conversation::class,
-            Conversation::FIELD_PK,
-            self::FIELD_CONVERSATION_ID
+            ChatReply::class,
+            ChatReply::FIELD_PK,
+            self::FIELD_CHAT_REPLY_ID
         );
     }
 
@@ -73,8 +90,8 @@ class ConversationUser extends Pivot
     {
         return $this->belongsTo(
             User::class,
-            self::FIELD_USER_ID,
-            User::FIELD_PK
+            User::FIELD_PK,
+            self::FIELD_USER_ID
         );
     }
 }

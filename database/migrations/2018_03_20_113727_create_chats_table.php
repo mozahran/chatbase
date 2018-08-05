@@ -1,11 +1,11 @@
 <?php
 
-use App\ConversationUser;
+use App\Chat;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateConversationUsersTable extends Migration
+class CreateChatsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,10 @@ class CreateConversationUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create(ConversationUser::TABLE_NAME, function (Blueprint $table) {
-            $table->unsignedInteger(ConversationUser::FIELD_CONVERSATION_ID);
-            $table->unsignedInteger(ConversationUser::FIELD_USER_ID);
+        Schema::create(Chat::TABLE_NAME, function (Blueprint $table) {
+            $table->increments(Chat::FIELD_PK);
+            $table->unsignedInteger(Chat::FIELD_CREATOR_ID);
+            $table->timestamps();
         });
     }
 
@@ -27,6 +28,6 @@ class CreateConversationUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(ConversationUser::TABLE_NAME);
+        Schema::dropIfExists(Chat::TABLE_NAME);
     }
 }

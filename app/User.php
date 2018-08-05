@@ -165,15 +165,15 @@ class User extends Authenticatable
     // Relationships
     // ----------------------------------------------------------------------
 
-    public function conversations() : \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    public function chats() : \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(
-            Conversation::class,
-            ConversationUser::class,
-            ConversationUser::FIELD_USER_ID,
+            Chat::class,
+            ChatUser::class,
+            ChatUser::FIELD_USER_ID,
             self::FIELD_PK,
-            Conversation::FIELD_PK,
-            ConversationUser::FIELD_CONVERSATION_ID
+            Chat::FIELD_PK,
+            ChatUser::FIELD_CHAT_ID
         );
     }
 }

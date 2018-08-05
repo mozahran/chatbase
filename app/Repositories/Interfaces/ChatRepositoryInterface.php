@@ -4,14 +4,14 @@ namespace App\Repositories\Interfaces;
 
 use App\User;
 use Carbon\Carbon;
-use App\Conversation;
-use App\ConversationReply;
+use App\Chat;
+use App\ChatReply;
 use Illuminate\Database\Eloquent\Collection;
 
 interface ChatRepositoryInterface
 {
     /**
-     * Get all the conversations for a specific user.
+     * Get all the chats for a specific user.
      *
      * @param User $user
      * @param int $limit
@@ -19,26 +19,26 @@ interface ChatRepositoryInterface
      *
      * @return Collection
      */
-    public function getConversations(User $user, $limit = 15, $offset = 0) : Collection;
+    public function getChats(User $user, $limit = 15, $offset = 0) : Collection;
 
     /**
-     * Get a specific conversation for a specific user.
+     * Get a specific chat for a specific user.
      *
      * @param int $id
      * @param User $user
      *
-     * @return Conversation|null
+     * @return Chat|null
      */
-    public function getConversation(int $id, User $user) : ?Conversation;
+    public function getChat(int $id, User $user) : ?Chat;
 
     /**
-     * Get all replies in a specific conversation (from the given user's point of view).
+     * Get all replies in a specific chat (from the given user's point of view).
      *
      * In certain cases, some users delete one or more chat replies. They don't actually
      * delete these replies, instead, their relation to that reply (ConversationReplyUser)
      * gets deleted. In this case, we make sure that we don't fetch these replies.
      *
-     * @param Conversation $conversation
+     * @param Chat $chat
      * @param User $user
      * @param int $limit
      * @param int $offset
@@ -46,68 +46,68 @@ interface ChatRepositoryInterface
      * @return Collection
      */
     public function getReplies(
-        Conversation $conversation,
+        Chat $chat,
         User $user,
         int $limit = 15,
         int $offset = 0
     ) : Collection;
 
     /**
-     * Get new replies in a specific conversation (from the given user's point of view).
+     * Get new replies in a specific chat (from the given user's point of view).
      *
-     * @param Conversation $conversation
+     * @param Chat $chat
      * @param User $user
      * @param Carbon $time
      *
      * @return Collection
      */
     public function getNewReplies(
-        Conversation $conversation,
+        Chat $chat,
         User $user,
         Carbon $time
     ) : Collection;
 
     /**
-     * Get a specific conversation for a specific user along with its replies
+     * Get a specific chat for a specific user along with its replies
      *
-     * @param Conversation $conversation
+     * @param Chat $chat
      * @param User $user
      * @param int $limit
      * @param int $offset
      *
-     * @return Conversation|null
+     * @return Chat|null
      */
-    public function getConversationWithReplies(
-        Conversation $conversation,
+    public function getChatWithReplies(
+        Chat $chat,
         User $user,
         int $limit = 15,
         int $offset = 0
-    ) : ?Conversation;
+    ) : ?Chat;
 
     /**
-     * Get a collection of participants in a specific conversation.
+     * Get a collection of participants in a specific chat.
      *
-     * @param Conversation $conversation
+     * @param Chat $chat
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getConversationUsers(Conversation $conversation) : \Illuminate\Support\Collection;
+    public function getChatUsers(Chat $chat) : \Illuminate\Support\Collection;
 
     /**
-     * Count the number of participants in a specific conversation.
+     * Count the number of participants in a specific chat.
      *
-     * @param Conversation $conversation
+     * @param Chat $chat
      *
      * @return int
      */
-    public function countConversationUsers(Conversation $conversation) : int;
+    public function countChatUsers(Chat $chat) : int;
 
     /**
      * Count the number of users who are related to the given reply.
      *
-     * @param ConversationReply $reply
+     * @param ChatReply $reply
      *
      * @return int
      */
-    public function countReplyUsers(ConversationReply $reply) : int;
+    public function countReplyUsers(ChatReply $reply) : int;
 }

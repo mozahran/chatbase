@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\Conversation;
-use App\ConversationReply;
-use App\ConversationReplyUser;
-use App\ConversationUser;
+use App\Chat;
+use App\ChatReply;
+use App\ChatReplyUser;
+use App\ChatUser;
 use App\Managers\ChatManager;
 use App\Managers\Contracts\ChatManagerInterface;
 use App\Repositories\ChatRepository;
@@ -37,62 +37,62 @@ class ChatsTest extends TestCase
         $this->manager = app(ChatManager::class);
     }
 
-    public function testCreateConversation()
+    public function testCreateChat()
     {
         $creator = $this->createUser();
         $recipient = $this->createUser();
 
-        $created = $this->manager->createConversation($creator, [$creator, $recipient]);
+        $created = $this->manager->createChat($creator, [$creator, $recipient]);
 
         $this->assertNotNull($created);
     }
 
-    public function testAddUserToConversation()
+    public function testAddUserToChat()
     {
         $user = $this->createUser();
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
-        $added = $this->manager->addUserToConversation($user, $conversation);
+        $added = $this->manager->addUserToChat($user, $chat);
 
         $this->assertNotNull($added);
     }
 
-    public function testGetConversations()
+    public function testGetChats()
     {
         $user = $this->createUser();
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
-        $results = $this->repository->getConversations($user);
+        $results = $this->repository->getChats($user);
 
         $this->assertCount(1, $results);
     }
 
-    public function testGetConversation()
+    public function testGetChat()
     {
         $user = $this->createUser();
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
-        $found = $this->repository->getConversation($conversation->getId(), $user);
+        $found = $this->repository->getChat($chat->getId(), $user);
 
         $this->assertNotNull($found);
     }
 
-    public function testDeleteConversation()
+    public function testDeleteChat()
     {
         $user = $this->createUser();
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
-        $deleted = $this->manager->deleteConversation($conversation, $user);
+        $deleted = $this->manager->deleteChat($chat, $user);
 
         $this->assertTrue($deleted);
     }
 
-    public function testCountConversationUsers()
+    public function testCountChatUsers()
     {
         $user = $this->createUser();
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
-        $count = $this->repository->countConversationUsers($conversation);
+        $count = $this->repository->countChatUsers($chat);
 
         $this->assertEquals(1, $count);
     }
@@ -101,8 +101,8 @@ class ChatsTest extends TestCase
     {
         $user = $this->createUser();
         $recipients = [$this->createUser(), $this->createUser()];
-        $conversation = $this->createConversation($user);
-        $reply = $this->createReply($conversation, $user, $recipients, 'foo');
+        $chat = $this->createChat($user);
+        $reply = $this->createReply($chat, $user, $recipients, 'foo');
 
         $count = $this->repository->countReplyUsers($reply);
 
@@ -113,9 +113,9 @@ class ChatsTest extends TestCase
     {
         $user = $this->createUser();
         $recipients = [$this->createUser(), $this->createUser()];
-        $conversation = $this->createConversation($user, $recipients);
+        $chat = $this->createChat($user, $recipients);
 
-        $created = $this->manager->createReply($conversation, $user, 'foo');
+        $created = $this->manager->createReply($chat, $user, 'foo');
 
         $this->assertNotNull($created);
     }
@@ -124,12 +124,12 @@ class ChatsTest extends TestCase
     {
         $user = $this->createUser();
         $recipients = [$this->createUser(), $this->createUser()];
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
-        $this->createReply($conversation, $user, $recipients, 'foo');
-        $this->createReply($conversation, $user, $recipients, 'bar');
+        $this->createReply($chat, $user, $recipients, 'foo');
+        $this->createReply($chat, $user, $recipients, 'bar');
 
-        $results = $this->repository->getReplies($conversation, $user);
+        $results = $this->repository->getReplies($chat, $user);
 
         $this->assertCount(2, $results);
     }
@@ -138,29 +138,29 @@ class ChatsTest extends TestCase
     {
         $user = $this->createUser();
         $recipients = [$this->createUser(), $this->createUser()];
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
         $yesterday = Carbon::now()->subDay();
         $sinceAnHour = Carbon::now()->subHour();
 
-        $this->createReply($conversation, $user, $recipients, 'foo', $yesterday);
-        $this->createReply($conversation, $user, $recipients, 'bar', $sinceAnHour);
+        $this->createReply($chat, $user, $recipients, 'foo', $yesterday);
+        $this->createReply($chat, $user, $recipients, 'bar', $sinceAnHour);
 
-        $results = $this->repository->getNewReplies($conversation, $user, $yesterday);
+        $results = $this->repository->getNewReplies($chat, $user, $yesterday);
 
         $this->assertCount(1, $results);
     }
 
-    public function testGetConversationWithReplies()
+    public function testGetChatWithReplies()
     {
         $user = $this->createUser();
         $recipients = [$this->createUser(), $this->createUser()];
-        $conversation = $this->createConversation($user);
+        $chat = $this->createChat($user);
 
-        $this->createReply($conversation, $user, $recipients, 'foo');
-        $this->createReply($conversation, $user, $recipients, 'bar');
+        $this->createReply($chat, $user, $recipients, 'foo');
+        $this->createReply($chat, $user, $recipients, 'bar');
 
-        $results = $this->repository->getConversationWithReplies($conversation, $user);
+        $results = $this->repository->getChatWithReplies($chat, $user);
 
         $this->assertNotNull($results);
         $this->assertNotNull($results->replies);
@@ -170,8 +170,8 @@ class ChatsTest extends TestCase
     {
         $user = $this->createUser();
         $recipients = [$this->createUser(), $this->createUser()];
-        $conversation = $this->createConversation($user);
-        $reply = $this->createReply($conversation, $user, $recipients, 'foo');
+        $chat = $this->createChat($user);
+        $reply = $this->createReply($chat, $user, $recipients, 'foo');
 
         $deleted = $this->manager->deleteReply($reply, $user);
 
@@ -187,45 +187,45 @@ class ChatsTest extends TestCase
         return factory(User::class)->create();
     }
 
-    private function createConversation(User $creator, array $users = null)
+    private function createChat(User $creator, array $users = null)
     {
-        $conversation = factory(Conversation::class)->create([
-            Conversation::FIELD_CREATOR_ID => $creator->getId(),
+        $chat = factory(Chat::class)->create([
+            Chat::FIELD_CREATOR_ID => $creator->getId(),
         ]);
 
         $users[] = $creator;
 
-        collect($users)->map(function (User $user) use ($conversation) {
-            factory(ConversationUser::class)->create([
-                ConversationUser::FIELD_CONVERSATION_ID => $conversation->getId(),
-                ConversationUser::FIELD_USER_ID => $user->getId(),
+        collect($users)->map(function (User $user) use ($chat) {
+            factory(ChatUser::class)->create([
+                ChatUser::FIELD_CHAT_ID => $chat->getId(),
+                ChatUser::FIELD_USER_ID => $user->getId(),
             ]);
         });
 
-        return $conversation;
+        return $chat;
     }
 
     private function createReply(
-        Conversation $conversation,
+        Chat $chat,
         User $user,
         array $recipients,
         string $text,
         Carbon $createdAt = null
-    ) : ?ConversationReply
+    ) : ?ChatReply
     {
-        $reply = factory(ConversationReply::class)->create([
-            ConversationReply::FIELD_CONVERSATION_ID => $conversation->getId(),
-            ConversationReply::FIELD_SENDER_ID => $user->getId(),
-            ConversationReply::FIELD_TEXT => $text,
-            ConversationReply::CREATED_AT => $createdAt
+        $reply = factory(ChatReply::class)->create([
+            ChatReply::FIELD_CHAT_ID => $chat->getId(),
+            ChatReply::FIELD_SENDER_ID => $user->getId(),
+            ChatReply::FIELD_TEXT => $text,
+            ChatReply::CREATED_AT => $createdAt
         ]);
 
         $recipients[] = $user;
 
         collect($recipients)->map(function (User $user) use ($reply) {
-            factory(ConversationReplyUser::class)->create([
-                ConversationReplyUser::FIELD_USER_ID => $user->getId(),
-                ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID => $reply->getId(),
+            factory(ChatReplyUser::class)->create([
+                ChatReplyUser::FIELD_USER_ID => $user->getId(),
+                ChatReplyUser::FIELD_CHAT_REPLY_ID => $reply->getId(),
             ]);
         });
 

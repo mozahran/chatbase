@@ -5,27 +5,27 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-class ConversationReply extends Model
+class ChatReply extends Model
 {
     // ----------------------------------------------------------------------
     // Table Schema
     // ----------------------------------------------------------------------
 
-    const TABLE_NAME = 'conversation_replies';
+    const TABLE_NAME = 'chat_replies';
 
     const FIELD_PK = 'id';
-    const FIELD_CONVERSATION_ID = 'conversation_id';
+    const FIELD_CHAT_ID = 'chat_id';
     const FIELD_SENDER_ID = 'sender_id';
     const FIELD_TEXT = 'text';
 
     protected $fillable = [
-        self::FIELD_CONVERSATION_ID,
+        self::FIELD_CHAT_ID,
         self::FIELD_SENDER_ID,
         self::FIELD_TEXT,
     ];
 
     protected $casts = [
-        self::FIELD_CONVERSATION_ID => 'integer',
+        self::FIELD_CHAT_ID => 'integer',
         self::FIELD_SENDER_ID => 'integer',
     ];
 
@@ -40,7 +40,7 @@ class ConversationReply extends Model
 
     public function getConversationId() :? int
     {
-        return $this->getAttribute(self::FIELD_CONVERSATION_ID);
+        return $this->getAttribute(self::FIELD_CHAT_ID);
     }
 
     public function getSenderId() :? int
@@ -57,9 +57,9 @@ class ConversationReply extends Model
     // Setters
     // ----------------------------------------------------------------------
 
-    public function setConversation(Conversation $conversation) : self
+    public function setConversation(Chat $chat) : self
     {
-        return $this->setAttribute(self::FIELD_CONVERSATION_ID, $conversation->getId());
+        return $this->setAttribute(self::FIELD_CHAT_ID, $chat->getId());
     }
 
     public function setSender(User $sender) : self
@@ -76,21 +76,21 @@ class ConversationReply extends Model
     // Scope
     // ----------------------------------------------------------------------
 
-    public function scopeOfConversation(Builder $query, Conversation $conversation) : Builder
+    public function scopeOfConversation(Builder $query, Chat $chat) : Builder
     {
-        return $query->where(self::FIELD_CONVERSATION_ID, $conversation->getId());
+        return $query->where(self::FIELD_CHAT_ID, $chat->getId());
     }
 
     // ----------------------------------------------------------------------
     // Relationships
     // ----------------------------------------------------------------------
 
-    public function conversation() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function chat() : ?\Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(
-            Conversation::class,
-            self::FIELD_CONVERSATION_ID,
-            Conversation::FIELD_PK
+            Chat::class,
+            self::FIELD_CHAT_ID,
+            Chat::FIELD_PK
         );
     }
 
@@ -106,8 +106,8 @@ class ConversationReply extends Model
     public function recipients() : ?\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(
-            ConversationReplyUser::class,
-            ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID,
+            ChatReplyUser::class,
+            ChatReplyUser::FIELD_CHAT_REPLY_ID,
             self::FIELD_PK
         );
     }

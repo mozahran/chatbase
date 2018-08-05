@@ -5,10 +5,10 @@ namespace App\Managers;
 use DB;
 use App\User;
 use Carbon\Carbon;
-use App\Conversation;
-use App\ConversationUser;
-use App\ConversationReply;
-use App\ConversationReplyUser;
+use App\Chat;
+use App\ChatUser;
+use App\ChatReply;
+use App\ChatReplyUser;
 use App\Repositories\ChatRepository;
 use App\Managers\Contracts\ChatManagerInterface;
 use App\Repositories\Interfaces\ChatRepositoryInterface;
@@ -28,18 +28,18 @@ class ChatManager implements ChatManagerInterface
     /**
      * @inheritdoc
      */
-    public function createConversation(User $creator, array $recipients) : ?Conversation
+    public function createChat(User $creator, array $recipients) : ?Chat
     {
         DB::beginTransaction();
 
         try {
 
-            $conversation = new Conversation;
+            $conversation = new Chat;
             $conversation->setCreator($creator);
             $conversation->save();
 
             collect($recipients)->map(function($recipient) use ($conversation) {
-                $this->addUserToConversation($recipient, $conversation);
+                $this->addUserToChat($recipient, $conversation);
             });
 
             DB::commit();
@@ -53,27 +53,27 @@ class ChatManager implements ChatManagerInterface
     }
 
     public function createReply(
-        Conversation $conversation,
+        Chat $conversation,
         User $sender,
         string $text,
         Carbon $createdAt = null
-    ) : ?ConversationReply
+    ) : ?ChatReply
     {
         DB::beginTransaction();
 
         try {
 
-            $reply = new ConversationReply();
+            $reply = new ChatReply();
             $reply->setConversation($conversation);
             $reply->setSender($sender);
             $reply->setText($text);
             $createdAt !== null ? $reply->setCreatedAt($createdAt) : false;
             $reply->save();
 
-            $users = $this->repository->getConversationUsers($conversation);
+            $users = $this->repository->getChatUsers($conversation);
 
             collect ($users)->map(function ($user) use ($reply) {
-                (new ConversationReplyUser)
+                (new ChatReplyUser)
                     ->setUser($user)
                     ->setConversationReply($reply)
                     ->save();
@@ -89,54 +89,54 @@ class ChatManager implements ChatManagerInterface
         }
     }
 
-    public function addUserToConversation(User $user, Conversation $conversation) : bool
+    public function addUserToChat(User $user, Chat $conversation) : bool
     {
-        return (new ConversationUser())
+        return (new ChatUser())
             ->setConversation($conversation)
             ->setUser($user)
             ->save();
     }
 
     /**
-     * @param Conversation $conversation
+     * @param Chat $conversation
      * @param User $user
      *
      * @return bool
      * @throws \Exception
      */
-    public function deleteConversation(Conversation $conversation, User $user) : bool
+    public function deleteChat(Chat $conversation, User $user) : bool
     {
-        if (! $conversation || ! $conversation instanceof Conversation) {
+        if (! $conversation || ! $conversation instanceof Chat) {
             throw new \Exception('The given conversation model does not seem to be a real one!');
         }
 
-        $conversationUsersCount = $this->repository->countConversationUsers($conversation);
+        $conversationUsersCount = $this->repository->countChatUsers($conversation);
 
-        $conversationDeleted = ConversationUser::where([
-            ConversationUser::FIELD_CONVERSATION_ID => $conversation->getId(),
-            ConversationUser::FIELD_USER_ID => $user->getId()
+        $conversationDeleted = ChatUser::where([
+            ChatUser::FIELD_CHAT_ID => $conversation->getId(),
+            ChatUser::FIELD_USER_ID => $user->getId()
         ])->delete();
 
         // If the last user in a conversation deletes his/her own relationship to this conversation,
         // we need to delete the conversation since it's no longer needed.
         if ($conversationUsersCount <= 1 && $conversationDeleted) {
-            Conversation::where(Conversation::FIELD_PK, $conversation->getId())->delete();
+            Chat::where(Chat::FIELD_PK, $conversation->getId())->delete();
         }
 
         return $conversationDeleted;
     }
 
-    public function deleteReply(ConversationReply $reply, User $user) : bool
+    public function deleteReply(ChatReply $reply, User $user) : bool
     {
         $replyUsersCount = $this->repository->countReplyUsers($reply);
 
-        $replyDeleted = ConversationReplyUser::where(ConversationReplyUser::FIELD_CONVERSATION_REPLY_ID, $reply->getId())
-            ->where(ConversationReplyUser::FIELD_USER_ID, $user->getId())
+        $replyDeleted = ChatReplyUser::where(ChatReplyUser::FIELD_CHAT_REPLY_ID, $reply->getId())
+            ->where(ChatReplyUser::FIELD_USER_ID, $user->getId())
             ->delete();
 
         // Delete the reply if there are no more users involved.
         if ($replyUsersCount <= 1 && $replyDeleted) {
-            ConversationReply::where(ConversationReply::FIELD_PK, $reply->getId())->delete();
+            ChatReply::where(ChatReply::FIELD_PK, $reply->getId())->delete();
         }
 
         return $replyDeleted;

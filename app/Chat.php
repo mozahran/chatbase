@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Conversation extends Model
+class Chat extends Model
 {
     // ----------------------------------------------------------------------
     // Table Schema
     // ----------------------------------------------------------------------
 
-    const TABLE_NAME = 'conversations';
+    const TABLE_NAME = 'chats';
 
     const FIELD_PK = 'id';
     const FIELD_CREATOR_ID = 'creator_id';
@@ -62,8 +62,8 @@ class Conversation extends Model
     public function replies() : ?\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(
-            ConversationReply::class,
-            ConversationReply::FIELD_CONVERSATION_ID,
+            ChatReply::class,
+            ChatReply::FIELD_CHAT_ID,
             self::FIELD_PK
         );
     }
@@ -71,8 +71,8 @@ class Conversation extends Model
     public function lastReply() : ?\Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(
-            ConversationReply::class,
-            ConversationReply::FIELD_CONVERSATION_ID,
+            ChatReply::class,
+            ChatReply::FIELD_CHAT_ID,
             self::FIELD_PK
         )->latest('created_at');
     }
@@ -80,8 +80,8 @@ class Conversation extends Model
     public function users() : ?\Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(
-            ConversationUser::class,
-            ConversationUser::FIELD_CONVERSATION_ID,
+            ChatUser::class,
+            ChatUser::FIELD_CHAT_ID,
             self::FIELD_PK
         );
     }

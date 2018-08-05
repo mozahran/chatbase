@@ -212,7 +212,7 @@ abstract class Repository implements RepositoryInterface
 
         return false;
     }
-    
+
     /**
      * Count all models.
      *

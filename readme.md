@@ -24,19 +24,25 @@ Note: You are free to create an alias for Chatbase or a service provider. There 
 
 ### Create A Chat
 
-The `createChat` method in ChatRepository take two arguments. The first one an integer for the creator ID and the second param is the array of users involved in the chat (the creator ID must be included).
-That way you can have a one-to-one chat by passing two user IDs or one-to-many by passing three or more user IDs.
+The `createChat` method in ChatManager takes two arguments. The first is the creator of the chat, and the second is an array of the recipients (the creator must be included).
 
 ```php
-$chat = $chatRepository->createChat(1, [1, 2]);
+$creator = User::find(1);
+$anotherUser = User::find(2);
+$recipients = [$creator, $anotherUser];
+
+$chat = $chatManager->createChat($creator, $recipients);
 ```
 
-##### Add users to a chat
+##### Add Users To An Existing Chat
 
-You can add users to a created chat at any time, just like facebook group chats. This method takes two parameters: the user ID and the chats ID respectively.
+In order to add new recipients to an existing chat, just pass the chat object and the user.
 
 ```php
-$chatRepository->addUserToChat(3, 1)
+$chat = Chat::find(1);
+$user = User::find(3);
+
+$chatManager->addUserToChat($chat, $user)
 ```
 
 ### Get A Chat
@@ -44,10 +50,10 @@ $chatRepository->addUserToChat(3, 1)
 The `getChat` method takes the logged in `userId` since each user can delete replies on his part while not affecting other users involved in the chat.
 
 ```php
-$chatId = 1;
-$userId = 1;
+$chat = Chat::find(1);
+$user = User::find(3);
 
-$chat = $chatRepository->getChat($chatId, $userId);
+$chat = $chatRepository->getChat($chat, $user);
 ```
 
 If you want to get the replies along with the chat call the `getChatWithReplies` method with the same parameters as in the `getChat` method.
@@ -58,25 +64,32 @@ To get the chats of a specific user:
 
 
 ```php
-$chats = $chatRepository->getChats(1);
+$user = User::find(1);
+
+$chats = $chatRepository->getChats($user);
 ```
 
-You can limit the results by passing `limit` and `offset` params to the method after the `userId`.
+You can limit the results by passing `limit` and `offset` params.
 
 ### Delete A Chat
 
 When a user deletes a chat, other users involved in the chat are not affected. What really happens is that the relationship created for that user in the `chat_user` table gets deleted.
 
 ```php
-$chatRepositoy->deleteChat(1);
+$chat = Chat::find(1);
+
+$chatManager->deleteChat($chat);
 ```
 
 ### Create A Reply
 
-In order to create a reply you need to pass the `chatId`, `userId` & the `text` of the reply respectively.
+In order to create a reply you need to pass the `chat`, `user` & the `text` of the reply respectively.
 
 ```php
-$chatRepository->createReply(1, 2, "Hello World!");
+$chat = Chat::find(1);
+$user = User::find(1);
+
+$chatManager->createReply($chat, $user, "Hello World!");
 ```
 
 ### Get Replies
@@ -84,33 +97,34 @@ $chatRepository->createReply(1, 2, "Hello World!");
 The `userId` here is used to get the replies form the user's point of view (to avoid fetching replies that the user deleted). 
 
 ```php
-$chatId = 1;
-$userId = 1;
+$chat = Chat::find(1);
+$user = User::find(1);
 
-$replies = $chatRepository->getReplies($chatId, $userId);
+$replies = $chatRepository->getReplies($chat, $user);
 ```
 
-You can limit the replies by passing `limit` and `offset` params to the method after the `userId`.
+You can also limit the replies by passing `limit` and `offset`.
 
 ### Get New Replies
 
 You can use this method in a real-time chat to fetch new replies using a time marker.
 
 ```php
-$chatId = 1;
-$userId = 1;
+$chat = Chat::find(1);
+$user = User::find(1);
+
 $timeMarker = \Carbon\Carbon::now();
 
-$newReplies = $chatRepository->getNewReplies($chatId, $userId, $timeMarker);
+$newReplies = $chatRepository->getNewReplies($chat, $user, $timeMarker);
 ```
 
 ### Delete A Reply
 
-Once again, this won't delete the actual reply stored in `chat_replies` table. It just deletes the relationship for the user with this reply. The reply only gets deleted if there are no users interested in (have relationships with) this reply.
+Once again, this won't delete the actual reply stored in `chat_replies` table. It just deletes the relationship for the user with this reply. The reply only gets deleted if there are no users interested in this reply.
 
 ```php
-$replyId = 1;
-$userId = 1;
+$reply = ChatReply::find(1);
+$user = User::find(1);
 
-$chatReply->deleteReply($replyId, $userId);
+$chatManager->deleteReply($reply, $user);
 ```

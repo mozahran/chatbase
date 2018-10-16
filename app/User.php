@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -41,7 +41,7 @@ class User extends Authenticatable
 
     protected $casts = [
         self::FIELD_IS_SUSPENDED => 'boolean',
-        self::FIELD_IS_ACTIVE => 'boolean',
+        self::FIELD_IS_ACTIVE    => 'boolean',
     ];
 
     protected $hidden = [

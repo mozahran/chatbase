@@ -2,15 +2,14 @@
 
 namespace App\Repositories;
 
-use DB;
-use App\User;
-use Carbon\Carbon;
 use App\Chat;
-use App\ChatUser;
 use App\ChatReply;
 use App\ChatReplyUser;
-use Illuminate\Database\Eloquent\Collection;
+use App\ChatUser;
 use App\Repositories\Interfaces\ChatRepositoryInterface;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class ChatRepository implements ChatRepositoryInterface
 {
@@ -18,7 +17,7 @@ class ChatRepository implements ChatRepositoryInterface
     {
         return Chat::whereHas('users', function ($query) use ($user) {
             return $query->where(ChatUser::FIELD_USER_ID, $user->getId());
-        })->with(['lastReply', 'users' => function($query) use ($user) {
+        })->with(['lastReply', 'users' => function ($query) use ($user) {
             return $query->where(ChatUser::FIELD_USER_ID, '!=', $user->getId());
         }])->limit($limit)->offset($offset)->get();
     }
@@ -35,8 +34,7 @@ class ChatRepository implements ChatRepositoryInterface
         User $user,
         int $limit = 15,
         int $offset = 0
-    ) : Collection
-    {
+    ) : Collection {
         return ChatReply::with('sender')
             ->ofConversation($conversation)
             ->whereHas('recipients', function ($query) use ($user) {
@@ -50,8 +48,7 @@ class ChatRepository implements ChatRepositoryInterface
         Chat $conversation,
         User $user,
         Carbon $time
-    ) : Collection
-    {
+    ) : Collection {
         return ChatReply::with('sender')
             ->ofConversation($conversation)
             ->whereHas('recipients', function ($query) use ($user) {
@@ -64,8 +61,7 @@ class ChatRepository implements ChatRepositoryInterface
         User $user,
         int $limit = 15,
         int $offset = 0
-    ) : ?Chat
-    {
+    ) : ?Chat {
         return Chat::whereHas('users', function ($query) use ($user, $limit, $offset) {
             return $query->where(ChatUser::FIELD_USER_ID, $user->getId());
         })->with(['replies' => function ($query) use ($user, $limit, $offset) {

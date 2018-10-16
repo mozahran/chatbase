@@ -2,16 +2,16 @@
 
 namespace App\Managers;
 
-use DB;
-use App\User;
-use Carbon\Carbon;
 use App\Chat;
-use App\ChatUser;
 use App\ChatReply;
 use App\ChatReplyUser;
-use App\Repositories\ChatRepository;
+use App\ChatUser;
 use App\Managers\Contracts\ChatManagerInterface;
+use App\Repositories\ChatRepository;
 use App\Repositories\Interfaces\ChatRepositoryInterface;
+use App\User;
+use Carbon\Carbon;
+use DB;
 
 class ChatManager implements ChatManagerInterface
 {
@@ -26,26 +26,24 @@ class ChatManager implements ChatManagerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function createChat(User $creator, array $recipients) : ?Chat
     {
         DB::beginTransaction();
 
         try {
-
-            $chat = new Chat;
+            $chat = new Chat();
             $chat->setCreator($creator);
             $chat->save();
 
-            collect($recipients)->map(function($recipient) use ($chat) {
+            collect($recipients)->map(function ($recipient) use ($chat) {
                 $this->addUserToChat($recipient, $chat);
             });
 
             DB::commit();
 
             return $chat;
-
         } catch (\Exception $exception) {
             DB::rollback();
             exit($exception->getMessage());
@@ -57,12 +55,10 @@ class ChatManager implements ChatManagerInterface
         User $sender,
         string $text,
         Carbon $createdAt = null
-    ) : ?ChatReply
-    {
+    ) : ?ChatReply {
         DB::beginTransaction();
 
         try {
-
             $reply = new ChatReply();
             $reply->setChat($chat);
             $reply->setSender($sender);
@@ -72,8 +68,8 @@ class ChatManager implements ChatManagerInterface
 
             $users = $this->repository->getChatUsers($chat);
 
-            collect ($users)->map(function ($user) use ($reply) {
-                (new ChatReplyUser)
+            collect($users)->map(function ($user) use ($reply) {
+                (new ChatReplyUser())
                     ->setUser($user)
                     ->setChatReply($reply)
                     ->save();
@@ -82,7 +78,6 @@ class ChatManager implements ChatManagerInterface
             DB::commit();
 
             return $reply;
-
         } catch (\Exception $exception) {
             DB::rollback();
             exit($exception->getMessage());
@@ -101,12 +96,13 @@ class ChatManager implements ChatManagerInterface
      * @param Chat $chat
      * @param User $user
      *
-     * @return bool
      * @throws \Exception
+     *
+     * @return bool
      */
     public function deleteChat(Chat $chat, User $user) : bool
     {
-        if (! $chat || ! $chat instanceof Chat) {
+        if (!$chat || !$chat instanceof Chat) {
             throw new \Exception('The given chat model does not seem to be a real one!');
         }
 
@@ -114,7 +110,7 @@ class ChatManager implements ChatManagerInterface
 
         $chatDeleted = ChatUser::where([
             ChatUser::FIELD_CHAT_ID => $chat->getId(),
-            ChatUser::FIELD_USER_ID => $user->getId()
+            ChatUser::FIELD_USER_ID => $user->getId(),
         ])->delete();
 
         // If the last user in a chat deletes his/her own relationship to this chat,

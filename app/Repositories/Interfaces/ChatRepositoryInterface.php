@@ -2,10 +2,10 @@
 
 namespace App\Repositories\Interfaces;
 
-use App\User;
-use Carbon\Carbon;
 use App\Chat;
 use App\ChatReply;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 interface ChatRepositoryInterface
@@ -14,8 +14,8 @@ interface ChatRepositoryInterface
      * Get all the chats for a specific user.
      *
      * @param User $user
-     * @param int $limit
-     * @param int $offset
+     * @param int  $limit
+     * @param int  $offset
      *
      * @return Collection
      */
@@ -24,7 +24,7 @@ interface ChatRepositoryInterface
     /**
      * Get a specific chat for a specific user.
      *
-     * @param int $id
+     * @param int  $id
      * @param User $user
      *
      * @return Chat|null
@@ -40,8 +40,8 @@ interface ChatRepositoryInterface
      *
      * @param Chat $chat
      * @param User $user
-     * @param int $limit
-     * @param int $offset
+     * @param int  $limit
+     * @param int  $offset
      *
      * @return Collection
      */
@@ -55,8 +55,8 @@ interface ChatRepositoryInterface
     /**
      * Get new replies in a specific chat (from the given user's point of view).
      *
-     * @param Chat $chat
-     * @param User $user
+     * @param Chat   $chat
+     * @param User   $user
      * @param Carbon $time
      *
      * @return Collection
@@ -68,12 +68,12 @@ interface ChatRepositoryInterface
     ) : Collection;
 
     /**
-     * Get a specific chat for a specific user along with its replies
+     * Get a specific chat for a specific user along with its replies.
      *
      * @param Chat $chat
      * @param User $user
-     * @param int $limit
-     * @param int $offset
+     * @param int  $limit
+     * @param int  $offset
      *
      * @return Chat|null
      */

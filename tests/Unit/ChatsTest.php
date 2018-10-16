@@ -12,8 +12,8 @@ use App\Repositories\ChatRepository;
 use App\Repositories\Interfaces\ChatRepositoryInterface;
 use App\User;
 use Carbon\Carbon;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ChatsTest extends TestCase
 {
@@ -211,20 +211,19 @@ class ChatsTest extends TestCase
         array $recipients,
         string $text,
         Carbon $createdAt = null
-    ) : ?ChatReply
-    {
+    ) : ?ChatReply {
         $reply = factory(ChatReply::class)->create([
-            ChatReply::FIELD_CHAT_ID => $chat->getId(),
+            ChatReply::FIELD_CHAT_ID   => $chat->getId(),
             ChatReply::FIELD_SENDER_ID => $user->getId(),
-            ChatReply::FIELD_TEXT => $text,
-            ChatReply::CREATED_AT => $createdAt
+            ChatReply::FIELD_TEXT      => $text,
+            ChatReply::CREATED_AT      => $createdAt,
         ]);
 
         $recipients[] = $user;
 
         collect($recipients)->map(function (User $user) use ($reply) {
             factory(ChatReplyUser::class)->create([
-                ChatReplyUser::FIELD_USER_ID => $user->getId(),
+                ChatReplyUser::FIELD_USER_ID       => $user->getId(),
                 ChatReplyUser::FIELD_CHAT_REPLY_ID => $reply->getId(),
             ]);
         });

@@ -1,3 +1,5 @@
+[![StyleCI](https://github.styleci.io/repos/126861813/shield?branch=master)](https://github.styleci.io/repos/126861813)
+
 ## About Chatbase
 
 Chatbase is a free open source code for integration with your Laravel projects. 

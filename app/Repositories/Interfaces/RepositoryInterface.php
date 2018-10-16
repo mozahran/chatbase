@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Interfaces;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 interface RepositoryInterface
 {
@@ -12,6 +12,7 @@ interface RepositoryInterface
      *
      * @param int   $id
      * @param array $columns
+     *
      * @return Model|null
      */
     public function find(int $id, array $columns = ['*']);
@@ -54,6 +55,7 @@ interface RepositoryInterface
      * Create a new model.
      *
      * @param array $attributes
+     *
      * @return Model|false
      */
     public function create(array $attributes);

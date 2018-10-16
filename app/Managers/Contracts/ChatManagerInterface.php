@@ -2,17 +2,17 @@
 
 namespace App\Managers\Contracts;
 
-use App\User;
-use Carbon\Carbon;
 use App\Chat;
 use App\ChatReply;
+use App\User;
+use Carbon\Carbon;
 
 interface ChatManagerInterface
 {
     /**
      * Create a new chat.
      *
-     * @param User $user
+     * @param User  $user
      * @param array $users
      *
      * @return Chat|null
@@ -22,9 +22,9 @@ interface ChatManagerInterface
     /**
      * Create a new reply.
      *
-     * @param Chat $chat
-     * @param User $sender
-     * @param string $text
+     * @param Chat        $chat
+     * @param User        $sender
+     * @param string      $text
      * @param Carbon|null $createdAt
      *
      * @return ChatReply|null
@@ -64,7 +64,7 @@ interface ChatManagerInterface
      * this reply (have no ChatRelyUser relations), the actual reply gets deleted as well.
      *
      * @param ChatReply $reply
-     * @param User $user
+     * @param User      $user
      *
      * @return bool
      */

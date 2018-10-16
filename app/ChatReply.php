@@ -2,8 +2,8 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ChatReply extends Model
 {
@@ -25,7 +25,7 @@ class ChatReply extends Model
     ];
 
     protected $casts = [
-        self::FIELD_CHAT_ID => 'integer',
+        self::FIELD_CHAT_ID   => 'integer',
         self::FIELD_SENDER_ID => 'integer',
     ];
 

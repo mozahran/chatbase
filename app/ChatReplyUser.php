@@ -25,7 +25,7 @@ class ChatReplyUser extends Pivot
 
     protected $casts = [
         self::FIELD_CHAT_REPLY_ID => 'integer',
-        self::FIELD_USER_ID => 'integer',
+        self::FIELD_USER_ID       => 'integer',
     ];
 
     protected $dates = [

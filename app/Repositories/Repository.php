@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
 use App\Repositories\Interfaces\RepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 abstract class Repository implements RepositoryInterface
 {
@@ -55,7 +55,7 @@ abstract class Repository implements RepositoryInterface
     /**
      * Find a specific model by Id.
      *
-     * @param int $id
+     * @param int   $id
      * @param array $columns
      *
      * @return Model|Collection|static[]|static|null
@@ -70,8 +70,6 @@ abstract class Repository implements RepositoryInterface
         if ($order) {
             return $order;
         }
-
-        return null;
     }
 
     /**
@@ -79,7 +77,7 @@ abstract class Repository implements RepositoryInterface
      *
      * @param string $attribute
      * @param string $value
-     * @param array $columns
+     * @param array  $columns
      *
      * @return Model|null
      */
@@ -87,8 +85,7 @@ abstract class Repository implements RepositoryInterface
         string $attribute,
         string $value,
         array $columns = ['*']
-    )
-    {
+    ) {
         return $this->model()
             ->with($this->relations)
             ->withCount($this->countRelations)
@@ -101,9 +98,9 @@ abstract class Repository implements RepositoryInterface
      *
      * @param string $keyword
      * @param string $attribute
-     * @param int $limit
-     * @param int $offset
-     * @param array $columns
+     * @param int    $limit
+     * @param int    $offset
+     * @param array  $columns
      *
      * @return Collection|static[]
      */
@@ -113,13 +110,12 @@ abstract class Repository implements RepositoryInterface
         int $limit = 15,
         int $offset = 0,
         array $columns = ['*']
-    ) : Collection
-    {
+    ) : Collection {
         return $this
             ->model()
             ->with($this->relations)
             ->withCount($this->countRelations)
-            ->where($attribute, 'like', '%' . $keyword . '%')
+            ->where($attribute, 'like', '%'.$keyword.'%')
             ->limit($limit)
             ->offset($offset)
             ->get($columns);
@@ -155,8 +151,8 @@ abstract class Repository implements RepositoryInterface
     /**
      * Paginate the existing models.
      *
-     * @param int $limit
-     * @param int $offset
+     * @param int   $limit
+     * @param int   $offset
      * @param array $columns
      *
      * @return Collection|static[]
@@ -165,8 +161,7 @@ abstract class Repository implements RepositoryInterface
         int $limit = 15,
         int $offset = 0,
         array $columns = ['*']
-    ) : Collection
-    {
+    ) : Collection {
         return $this
             ->model()
             ->with($this->relations)
@@ -180,7 +175,7 @@ abstract class Repository implements RepositoryInterface
      * Update a specific model.
      *
      * @param array $attributes
-     * @param int $id
+     * @param int   $id
      *
      * @return bool
      */
